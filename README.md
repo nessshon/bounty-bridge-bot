@@ -40,7 +40,7 @@ an interactive button for easy reward creation.
 * **phpMyAdmin** - Web-based database administration tool.
 * **Admin Panel** - Custom web interface for administrative tasks.
 * **Telegram Bot** - Bot implementation for interacting on Telegram.
-* **Redis** - In-memory data structure store, commonly used as a cache.
+* **Redis** - In-memory data structure store.
 
 ## Launch and deployment:
 

@@ -14,7 +14,6 @@ def bot_routers_include(dp: Dispatcher) -> None:
             private.command.router,
 
             private.callback_query.router,
-            private.inline_query.router,
             private.message.router,
 
             private.my_chat_member.router,
