@@ -12,7 +12,7 @@ from project.db.models import IssueDB
 class IndexView(CustomView):
     async def render(self, request: Request, templates: Jinja2Templates) -> Response:
         session: AsyncSession = request.state.session
-        statement = select(IssueDB).limit(10).order_by(desc(IssueDB.created_at))
+        statement = select(IssueDB).limit(20).order_by(desc(IssueDB.created_at))
         result = await session.execute(statement)
         issues = result.scalars().all()
 

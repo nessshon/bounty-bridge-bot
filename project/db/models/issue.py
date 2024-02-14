@@ -59,7 +59,7 @@ class IssueDB(Base):
     """List of GitHub label names or None if not assigned."""
 
     rewards = Column(
-        VARCHAR(4096),
+        VARCHAR(512),
         nullable=True,
     )
     """Rewards of the issue or None if not assigned."""
@@ -105,46 +105,6 @@ class IssueDB(Base):
     __admin_label__ = "Issues"
     __admin_name__ = "Issue"
     __admin_identity__ = "issue"
-
-    def to_dict(self) -> dict:
-        return {
-            "number": self.number,
-            "url": self.url,
-            "title": self.title,
-            "creator": self.creator,
-            "assignee": self.assignee,
-            "assignees": ", ".join(self.assignees),  # noqa
-            "labels": ", ".join(self.labels),  # noqa
-            "rewards": self.rewards,
-            "summary": self.summary,
-            "state": self.state,
-            "state_reason": self.state_reason,
-            "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            "updated_at": self.updated_at.strftime("%Y-%m-%d %H:%M:%S") if self.updated_at else None,
-            "closed_at": self.closed_at.strftime("%Y-%m-%d %H:%M:%S") if self.closed_at else None,
-        }
-
-    def to_repr_dict(self) -> dict:
-        def get_github_user_url(username: Any) -> str:
-            return f"<a href='https://github.com/{username}'>{username}</a>"
-
-        return {
-            "frmt_number": f"#{self.number}",
-            "frmt_title": f"<b>{self.title}</b>",
-            "frmt_title_url": f"<a href='{self.url}'>{self.title}</a>",
-            "frmt_creator": get_github_user_url(self.creator) if self.creator else "-",
-            "frmt_assignee": get_github_user_url(self.assignee) if self.assignee else "-",
-            "frmt_assignees": ", ".join(
-                get_github_user_url(assignee) for assignee in self.assignees) if self.assignees else "-",
-            "frmt_labels": ", ".join(self.labels) if self.labels else "-",  # noqa
-            "frmt_rewards": self.rewards if self.rewards else "-",
-            "frmt_summary": f"<blockquote>{self.summary}</blockquote>" if self.summary else "-",
-            "frmt_state": f"<b>{self.state}" if self.state else "-",
-            "frmt_state_reason": f"<b>{self.state_reason}</b>" if self.state_reason else "-",
-            "frmt_created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            "frmt_updated_at": self.updated_at.strftime("%Y-%m-%d %H:%M:%S") if self.updated_at else "-",
-            "frmt_closed_at": self.closed_at.strftime("%Y-%m-%d %H:%M:%S") if self.closed_at else "-",
-        }
 
     @classmethod
     async def get(

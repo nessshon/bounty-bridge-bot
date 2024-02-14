@@ -36,6 +36,6 @@ class TextMessage:
 
         if message.preview_url:
             hidden_link = hide_link(message.preview_url)
-            return hidden_link + message.text
+            return message.text[:3] + hidden_link + message.text[3:]
 
         return message.text

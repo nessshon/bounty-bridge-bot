@@ -22,7 +22,7 @@ class TextMessageView(CustomModelView):
             TextMessageDB.code.name, "Code",
             read_only=True,
         ),
-        TextAreaField(
+        TinyMCEEditorField(
             TextMessageDB.text.name, "Text",
             required=True,
             maxlength=1024,

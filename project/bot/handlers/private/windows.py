@@ -1,5 +1,6 @@
 from project.bot.manager import Manager
 from project.bot.utils import keyboards
+from project.bot.utils.formatters import format_issue_notify_to_message
 from project.bot.utils.states import State
 from project.bot.utils.texts.messages import MessageCode
 from project.db.models import IssueDB
@@ -44,10 +45,8 @@ class Window:
         issue = await IssueDB.get(manager.sessionmaker, issue_number)
 
         text = await manager.text_message.get(MessageCode.ISSUE_INFO)
+        text = format_issue_notify_to_message(text, issue)
         reply_markup = await keyboards.issue_info(manager.text_button, issue.url)
 
-        format_data = issue.to_dict()
-        format_data.update(issue.to_repr_dict())
-
-        await manager.send_message(text.format_map(format_data), reply_markup=reply_markup)
+        await manager.send_message(text, reply_markup=reply_markup)
         await manager.state.set_state(State.ISSUE_INFO)
