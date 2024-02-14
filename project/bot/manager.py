@@ -14,9 +14,9 @@ from aiogram.types import (
 )
 from aiogram.types.base import (
     UNSET_DISABLE_WEB_PAGE_PREVIEW,
-    UNSET_PARSE_MODE,
 )
 from sqlalchemy.ext.asyncio import async_sessionmaker
+from sulguk import SULGUK_PARSE_MODE
 
 from project.bot.utils.texts.buttons import TextButton
 from project.bot.utils.texts.messages import TextMessage
@@ -80,7 +80,7 @@ class Manager:
             self,
             text: str,
             format_data: list[Dict] = None,
-            parse_mode: str | None = UNSET_PARSE_MODE,
+            parse_mode: str | None = SULGUK_PARSE_MODE,
             disable_web_page_preview: bool | None = UNSET_DISABLE_WEB_PAGE_PREVIEW,
             disable_notification: bool | None = None,
             reply_markup: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply | None = None,
