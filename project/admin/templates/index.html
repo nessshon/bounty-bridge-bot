@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block header %}
+<div class="d-flex justify-content-between align-items-center">
+    <div class="row g-2 align-items-center">
+        <div class="col">
+            <h2 class="page-title">
+                Home
+            </h2>
+        </div>
+    </div>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{ url_for(__name__ ~ ':index')}}">Admin</a>
+        </li>
+        <li class="breadcrumb-item active">Home</li>
+    </ol>
+</div>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Latest Issues</h3>
+                </div>
+                <div class="card-body">
+                    <div class="list-group card-list-group">
+                        {%for issue in issues%}
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-fill d-flex flex-column">
+                                    <h3>{{issue.title}}</h3>
+                                    {%if issue.summary%}
+                                    <blockquote>{{issue.summary}}</blockquote>
+                                    {%endif%}
+                                    <div class="d-flex flex-row">
+                                    <span class="text-muted">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         class="icon icon-tabler icon-tabler-calendar-time"
+                                         width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+                                         stroke="currentColor"
+                                         fill="none" stroke-linecap="round" stroke-linejoin="round">
+                               <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                               <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4"></path>
+                               <circle cx="18" cy="18" r="4"></circle>
+                               <path d="M15 3v4"></path>
+                               <path d="M7 3v4"></path>
+                               <path d="M3 11h16"></path>
+                               <path d="M18 16.496v1.504l1 1"></path>
+                            </svg>
+                                        {{issue.created_at.strftime("%B %d, %Y %H:%M")}}
+                                    </span>
+                                        <a class="ms-3"
+                                           href="https://github.com/{{issue.creator}}" target="_blank">
+                                            <i class="fa-solid fa-user"></i>
+                                            {{issue.creator}}
+                                        </a>
+                                    </div>
+                                    <div class="d-flex flex-row mt-2">
+                                        {% for label in issue.labels %}
+                                        <span class="me-3 badge bg-purple-lt"><i class="fa fa-tag"></i> {{label}}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <a class="btn btn-icon btn-outline-primary"
+                                       href="{{url_for(__name__ ~ ':detail', identity='issue',pk=issue.number)}}"
+                                       target="_blank">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {%endfor%}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

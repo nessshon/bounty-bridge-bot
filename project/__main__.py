@@ -17,6 +17,7 @@ from starlette_admin import I18nConfig
 from .admin.admin import Admin
 from .admin.auth import AuthMiddleware, AuthProvider
 from .admin.views import admin_views_add
+from .admin.views.index import IndexView
 from .app.routes import app_routers_include
 from .app.middlewares import app_middlewares_register
 from .bot.commands import bot_commands_setup, bot_commands_delete
@@ -130,6 +131,7 @@ admin = Admin(
         Middleware(SessionMiddleware, secret_key=config.webhook.SECRET),  # type: ignore
         Middleware(AuthMiddleware, provider=AuthProvider()),  # type: ignore
     ],
+    index_view=IndexView(name="index", label="Home", icon="fa fa-home"),
 )
 
 # Mount static files directory
@@ -147,7 +149,7 @@ bot_middlewares_register(dp, config=config, redis=storage.redis, sessionmaker=se
 bot_routers_include(dp)
 
 # Initialize admin routes
-admin.init_routes()
+# admin.init_routes()
 # Mount admin panel
 admin.mount_to(app)
 # Add admin views
