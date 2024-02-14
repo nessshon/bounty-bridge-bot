@@ -20,8 +20,7 @@ class TextMessageView(CustomModelView):
         ),
         StringField(
             TextMessageDB.code.name, "Code",
-            required=False,
-            maxlength=64,
+            read_only=True,
         ),
         TextAreaField(
             TextMessageDB.text.name, "Text",
@@ -37,6 +36,7 @@ class TextMessageView(CustomModelView):
     page_size = 50
     form_include_pk = False
     fields_default_sort = [TextMessageDB.id.name]
+    exclude_fields_from_list = [TextMessageDB.code.name, TextMessageDB.id.name]
     searchable_fields = [c.name for c in TextMessageDB.__table__.columns]  # type: ignore
 
     def can_create(self, request: Request) -> bool:

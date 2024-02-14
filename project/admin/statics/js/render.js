@@ -12,10 +12,10 @@ function escape(value) {
   });
 }
 function null_column() {
-  return '<span class="text-center text-muted">-null-</span>';
+  return '<span class="text-center text-muted">-</span>';
 }
 function empty_column() {
-  return '<span class="text-center text-muted">-empty-</span>';
+  return '<span class="text-center text-muted">-</span>';
 }
 const render = {
   col_0: function (data, type, full, meta) {

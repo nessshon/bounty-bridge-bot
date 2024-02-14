@@ -69,8 +69,15 @@ class IssueView(CustomModelView):
             read_only=True,
         ),
     ]
+    page_size = 50
     search_builder = True
     searchable_fields = [c.name for c in IssueDB.__table__.columns]  # type: ignore
 
     def can_create(self, request: Request) -> bool:
+        return False
+
+    def can_edit(self, request: Request) -> bool:
+        return False
+
+    def can_delete(self, request: Request) -> bool:
         return False
