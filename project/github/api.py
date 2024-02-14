@@ -29,7 +29,10 @@ class GitHubAPI:
         self.owner = owner
         self.repo = repo
         self.base_url = base_url
-        self.headers = {'Authorization': f'Bearer {self.token}'}
+        self.headers = {
+            f"Authorization": f"Bearer {self.token}",
+            "Accept": "application/vnd.github.full+json",
+        }
 
     async def _get(self, method: str) -> Dict:
         """
