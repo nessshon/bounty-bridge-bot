@@ -126,6 +126,8 @@ Additional configuration parameters are located in [.env.example](.env.example).
 ## Environment Variables Reference
 
 Here is a reference guide for the environment variables used in the project:
+<details>
+<summary><b>Expand to view</b></summary>
 
 | Variable            | Type | Description                                                         | Example Local             | Example Prod        |
 |---------------------|------|---------------------------------------------------------------------|---------------------------|---------------------|
@@ -151,3 +153,20 @@ Here is a reference guide for the environment variables used in the project:
 | MYSQL_PASSWORD      | str  | The password for accessing the database                             | password                  | password            |
 | MYSQL_DATABASE      | str  | The name of the database                                            | dbname                    | dbname              |
 | CERTBOT_EMAIL       | str  | Email address for Certbot notifications                             | --skip--                  | example@mail.com    |
+
+</details>
+
+## Contribution
+
+We welcome your contributions! If you have ideas for improvement or have identified a bug, please create an issue or
+submit a pull request.
+
+## Support
+
+Supported by [TON Society](https://github.com/ton-society/grants-and-bounties), Grants and Bounties program.
+
+## License
+
+This repository is distributed under the [MIT License](https://github.com/nessshon/bounty-bridge-bot/blob/main/LICENSE). Feel
+free to use, modify, and distribute the code in accordance
+with the terms of the license.
