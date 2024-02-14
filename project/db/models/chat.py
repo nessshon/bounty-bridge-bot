@@ -17,6 +17,10 @@ class ChatDB(Base):
         primary_key=True,
         nullable=False,
     )
+    type = Column(
+        VARCHAR(length=32),
+        nullable=False,
+    )
     title = Column(
         VARCHAR(length=255),
         nullable=False,
