@@ -27,6 +27,7 @@ from .config import load_config
 from .db.models import Base
 from .github.api import GitHubAPI
 from .logger import setup_logger
+from .scheduler import Scheduler
 
 
 @asynccontextmanager
@@ -36,12 +37,13 @@ async def lifespan(_: FastAPI):
 
     - Creates database tables.
     - Sets up bot commands and webhook.
+    - Runs the scheduler.
 
     Yields control during application's lifespan and performs cleanup on exit.
 
     - Disposes all database connections.
     - Deletes bot webhook and commands.
-    - Closes aiohttp session.
+    - Shuts down the scheduler.
     """
     loop = asyncio.get_event_loop()
     loop.__setattr__("bot", bot)
@@ -54,13 +56,14 @@ async def lifespan(_: FastAPI):
 
     await bot_commands_setup(bot)
     await bot.set_webhook(url=webhook_url, allowed_updates=dp.resolve_used_update_types())
-    from .github.tasks import track_and_notify_issue
-    _ = asyncio.create_task(track_and_notify_issue())
+
+    scheduler.run()
 
     try:
         yield
     finally:
         # Cleanup actions
+        scheduler.shutdown()
         await engine.dispose()
         await bot_commands_delete(bot)
         await bot.delete_webhook()
@@ -102,18 +105,28 @@ sessionmaker = async_sessionmaker(
     expire_on_commit=False,
 )
 
-# Create bot and dispatcher instances
+# Create bot instance
 bot = Bot(
     token=config.bot.TOKEN,
     parse_mode=ParseMode.HTML,
 )
+
+# Create Redis storage instance
 storage = RedisStorage.from_url(
     url=config.redis.dsn(),
 )
+
+# Create scheduler instance
+scheduler = Scheduler(
+    config=config,
+)
+
+# Create dispatcher instance
 dp = Dispatcher(
     storage=storage,
     config=config,
     githubapi=githubapi,
+    scheduler=scheduler,
 )
 
 # Create admin instance
@@ -144,12 +157,10 @@ app_routers_include(app)
 app.add_api_route(webhook_path, endpoint=bot_webhook, methods=["POST"])
 
 # Register bot middlewares
-bot_middlewares_register(dp, config=config, redis=storage.redis, sessionmaker=sessionmaker)
+bot_middlewares_register(dp, bot, config=config, redis=storage.redis, sessionmaker=sessionmaker)
 # Include bot routers
 bot_routers_include(dp)
 
-# Initialize admin routes
-# admin.init_routes()
 # Mount admin panel
 admin.mount_to(app)
 # Add admin views
