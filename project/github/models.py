@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import re
 from datetime import datetime
-from typing import List, Union, Optional
+from typing import List, Union, Any
 
+from bs4 import BeautifulSoup
 from pydantic import BaseModel, field_validator, Field
 
 
@@ -31,10 +31,10 @@ class Issue(BaseModel):
     labels: List[Union[str, None]]
     """List of GitHub label names or None if not assigned."""
 
-    rewards: Union[str, None] = Field(default="-", alias="body")
+    rewards: Union[str, None] = Field(default="-", alias="body_html")
     """Rewards of the issue or None if not assigned."""
 
-    summary: Union[str, None] = Field(default="-", alias="body")
+    summary: Union[str, None] = Field(default="-", alias="body_html")
     """Summary of the issue or None if not assigned."""
 
     state: str
@@ -75,58 +75,43 @@ class Issue(BaseModel):
     @field_validator("rewards", mode="before")
     def extract_rewards(cls, value):  # noqa
         """Extracts rewards from the given value (body)."""
-        patterns = [
-            r'Estimate suggested reward\r\n\r\n(.*?)\r\n\r\n',
-            r'Estimate suggested reward\r\n(.*?)\r\n\r\n',
-            r'Estimate suggested reward\n\n(.*?)\n\n',
-            r'Estimate suggested reward\r\n(.*?$)',
-            r'Estimate suggested reward\n\n(.*?$)',
-            r'REWARD\r\n\r\n(.*?)\r\n\r\n',
-            r'Reward\r\n\r\n(.*?)\r\n\r\n',
-            r'Reward\r\n\r\n(.*?$)',
-            r'Reward\n\n(.*?)\n\n',
-            r'Reward\r\n(.*?$)',
-        ]
-        if value is not None:
-            # Replace "- " and "* " with "• " in the value
-            value = value.replace("- ", "• ").replace("* ", "• ")
-        return cls._extract_information(patterns, value)
+        heading_patterns = ["h3", "h2", "h1"]
+        rewards_patterns = ["REWARD", "Reward", "Estimate suggested reward"]
+        return cls.extract_content(value, heading_patterns, rewards_patterns, 512)
 
     @field_validator("summary", mode="before")
     def extract_summary(cls, value):  # noqa
         """Extracts summary from the given value (body)."""
-        patterns = [
-            r'Summary\r\n(.*?)\r\n\r\n',
-            r'Summary\n\n(.*?)\n\n',
-        ]
-        return cls._extract_information(patterns, value)
+        heading_patterns = ["h3", "h2", "h1"]
+        summary_patterns = ["Summary", "Introduction"]
+        return cls.extract_content(value, heading_patterns, summary_patterns, 2048)
 
-    @classmethod
-    def _extract_information(cls, patterns: List[str], value: Optional[str]) -> Optional[str]:
-        """Extracts information from the given value using the given patterns."""
-        # Check if the input value is a string
+    @staticmethod
+    def extract_content(
+            value: Any,
+            heading_patterns: List[str],
+            content_patterns: List[str],
+            max_length: int,
+    ) -> Union[str, None]:
+        """Extracts content from the given value (body)."""
         if not isinstance(value, str):
             return None
 
-        # Iterate through the provided patterns
-        for pattern in patterns:
-            # Use regular expression to find a match in the value
-            match = re.search(pattern, value, re.DOTALL)
-            if match:
-                # Extract text from the matched group and remove leading/trailing whitespaces
-                text = match.group(1).strip()
+        paragraphs = []
+        soup = BeautifulSoup(value, 'html.parser')
 
-                # Define a pattern for converting Markdown links to HTML links
-                markdown_link_pattern = re.compile(r'\[([^]]+)]\(([^)]+)\)')
+        for tag, text in [(_tag, _text) for _tag in heading_patterns for _text in content_patterns]:
+            block = soup.find(tag, text=text)
+            if block:
+                next_element = block.find_next()
+                if next_element and next_element.name in heading_patterns:
+                    continue
+                if max_length == 512:
+                    content_elements = block.find_next(["ul", "li"])
+                else:
+                    content_elements = block.find_next("p")
+                if content_elements:
+                    paragraphs.append(str(content_elements))
 
-                # Define a function to convert Markdown links to HTML links
-                def markdown_to_html(m):
-                    link_text = m.group(1)
-                    link_url = m.group(2)
-                    return f'<a href="{link_url}">{link_text}</a>'
-
-                # Apply the Markdown to HTML conversion to the extracted text
-                return re.sub(markdown_link_pattern, markdown_to_html, text)
-
-        # Return None if no match is found
-        return None
+        text = "".join(paragraphs)
+        return None if (text is None) or (len(text) > max_length) else text
