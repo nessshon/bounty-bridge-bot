@@ -44,6 +44,9 @@ an interactive button for easy reward creation.
 
 ## Launch and deployment:
 
+<details>
+<summary><b>Preparation</b></summary>
+
 Clone this repo:
 
 ```bash
@@ -68,8 +71,10 @@ Configure [environment variables](#environment-variables-reference) variables fi
 nano .env
 ```
 
+</details>
+
 <details>
-<summary><b>Continuation for local launch</b></summary>
+<summary><b>Local launch</b></summary>
 
 Install dependencies
 
@@ -86,7 +91,7 @@ python -m project
 </details>
 
 <details>
-<summary><b>Continuation for server deployment</b></summary>
+<summary><b>Deployment and launch</b></summary>
 
 Change server_name on [phpmyadmin.conf](services/nginx/user_conf.d/phpmyadmin.conf):
 
@@ -167,6 +172,4 @@ Supported by [TON Society](https://github.com/ton-society/grants-and-bounties), 
 
 ## License
 
-This repository is distributed under the [MIT License](https://github.com/nessshon/bounty-bridge-bot/blob/main/LICENSE). Feel
-free to use, modify, and distribute the code in accordance
-with the terms of the license.
+This repository is distributed under the [MIT License](https://github.com/nessshon/bounty-bridge-bot/blob/main/LICENSE).
