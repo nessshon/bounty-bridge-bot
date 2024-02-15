@@ -1,5 +1,6 @@
 from aiogram import Dispatcher
 
+from . import group
 from . import private
 from . import errors
 
@@ -12,11 +13,10 @@ def bot_routers_include(dp: Dispatcher) -> None:
         *[
             errors.router,
             private.command.router,
-
             private.callback_query.router,
             private.message.router,
-
             private.my_chat_member.router,
+            group.my_chat_member.router,
         ]
     )
 
