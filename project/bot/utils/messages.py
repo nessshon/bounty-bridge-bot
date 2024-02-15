@@ -4,6 +4,7 @@ from typing import Union
 from aiogram import Bot
 from aiogram.exceptions import TelegramBadRequest, TelegramRetryAfter
 from aiogram.types import InlineKeyboardMarkup as Markup, BufferedInputFile, Message
+from sulguk import SULGUK_PARSE_MODE
 
 
 async def send_message(
@@ -21,12 +22,14 @@ async def send_message(
                 document=document,
                 caption=text,
                 reply_markup=reply_markup,
+                parse_mode=SULGUK_PARSE_MODE,
             )
         else:
             message = await bot.send_message(
                 chat_id=chat_id,
                 text=text,
                 reply_markup=reply_markup,
+                parse_mode=SULGUK_PARSE_MODE,
             )
         return message
 

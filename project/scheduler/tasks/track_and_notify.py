@@ -51,7 +51,7 @@ async def track_and_notify() -> None:
 
         for issue in issue_list:
             text = format_issue_notify_to_message(message_text, issue)
-            button = Button(text=button_text, url=issue.html_url)
+            button = Button(text=button_text, url=issue.url)
             reply_markup = Markup(inline_keyboard=[[button], [create_bounty_button]])
 
             for chat in chats:

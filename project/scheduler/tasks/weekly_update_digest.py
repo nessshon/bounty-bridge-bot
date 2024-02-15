@@ -4,6 +4,7 @@ from typing import Tuple, List
 
 from aiogram import Bot
 from aiogram.types import InlineKeyboardMarkup as Markup
+from sqlalchemy import and_, not_
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from ...bot.utils.formatters import format_weekly_notify_to_message
@@ -14,7 +15,7 @@ from ...config import BOUNTIES_CREATOR_BOT_URL
 from ...db.models import IssueDB, ChatDB
 
 
-async def get_stats(sessionmaker: async_sessionmaker) -> Tuple[int, int, int]:
+async def _get_stats(sessionmaker: async_sessionmaker) -> Tuple[int, int, int]:
     """
     Retrieve statistics on active, approved assignee, and suggested opinions.
 
@@ -22,28 +23,59 @@ async def get_stats(sessionmaker: async_sessionmaker) -> Tuple[int, int, int]:
     :return: Tuple of active, approved assignee, and suggested opinions.
     """
     current_date = datetime.now().date()
-    start_last_week = current_date - timedelta(days=current_date.weekday() + 7)
+    start_last_week, end_last_week = _get_last_week_period(current_date)
 
-    # Define filters for different categories
+    # Define date filters for the week
+    _date_filters = and_(
+        IssueDB.created_at >= start_last_week,
+        IssueDB.created_at <= end_last_week,
+    )
+    # Filters for active issues
     active_filters = [
-        IssueDB.created_at >= start_last_week
+        _date_filters,
+        and_(
+            IssueDB.assignee.is_not(None),
+            IssueDB.state == "open",
+        )
     ]
+    # Filters for approved assignee issues
     approved_filters = [
-        *active_filters,
-        IssueDB.labels.contains(["Approved"]),
-        IssueDB.assignee.is_(None),
+        _date_filters,
+        and_(
+            IssueDB.labels.contains("Approved"),
+            IssueDB.assignee.is_(None),
+            IssueDB.state == "open",
+        )
     ]
+    # Filters for suggested opinions
     suggested_filters = [
-        *approved_filters[1:],
-        IssueDB.state.in_(["open"]),
+        _date_filters,
+        and_(
+            not_(IssueDB.labels.contains("Approved")),
+            IssueDB.state == "open",
+        )
     ]
 
-    # Get counts based on filters
+    # Retrieve counts for each category
     num_active = await IssueDB.get_count(sessionmaker, active_filters)
     num_approved_assignee = await IssueDB.get_count(sessionmaker, approved_filters)
     num_suggested_opinions = await IssueDB.get_count(sessionmaker, suggested_filters)
 
     return num_active, num_approved_assignee, num_suggested_opinions
+
+
+def _get_last_week_period(current_date: datetime.date) -> Tuple[datetime.date, datetime.date]:
+    """
+    Calculate the start and end dates of the previous week based on the current date.
+
+    :param current_date: The current date.
+    :return: Tuple of the start and end dates of the previous week.
+    """
+    start_current_week = current_date - timedelta(days=current_date.weekday())
+    start_last_week = start_current_week - timedelta(days=7)
+    end_last_week = start_last_week + timedelta(days=6)
+
+    return start_last_week, end_last_week
 
 
 async def weekly_update_digest() -> None:
@@ -57,7 +89,7 @@ async def weekly_update_digest() -> None:
     # Retrieve all chats
     chats: List[ChatDB] = await ChatDB.get_all(sessionmaker)
     # Get statistics
-    stats = await get_stats(sessionmaker)
+    stats = await _get_stats(sessionmaker)
 
     # Get message text and button
     message_text = await TextMessage(sessionmaker).get(MessageCode.WEEKLY_DIGEST)
