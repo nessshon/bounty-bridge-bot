@@ -71,6 +71,7 @@ class IssueView(CustomModelView):
     ]
     page_size = 50
     search_builder = True
+    fields_default_sort = (IssueDB.number, (IssueDB.number.name, True))
     searchable_fields = [c.name for c in IssueDB.__table__.columns]  # type: ignore
 
     def can_create(self, request: Request) -> bool:
