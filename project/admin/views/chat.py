@@ -65,9 +65,6 @@ class ChatView(CustomModelView):
         except Exception as e:
             raise FormValidationError({"id": str(e)})
 
-    def can_edit(self, request: Request) -> bool:
-        return False
-
     async def create(self, request: Request, data: Dict[str, Any]) -> Any:
         try:
             bot: Bot = request.state.bot

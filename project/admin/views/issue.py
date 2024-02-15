@@ -77,8 +77,5 @@ class IssueView(CustomModelView):
     def can_create(self, request: Request) -> bool:
         return False
 
-    def can_edit(self, request: Request) -> bool:
-        return False
-
     def can_delete(self, request: Request) -> bool:
         return False
