@@ -30,7 +30,7 @@ class TextButtonView(CustomModelView):
     page_size = 50
     form_include_pk = False
     fields_default_sort = [TextButtonDB.id.name]
-    exclude_fields_from_list = [TextButtonDB.code.name, TextButtonDB.id.name]
+    exclude_fields_from_list = [TextButtonDB.id.name]
     searchable_fields = [c.name for c in TextButtonDB.__table__.columns]  # type: ignore
 
     def can_create(self, request: Request) -> bool:

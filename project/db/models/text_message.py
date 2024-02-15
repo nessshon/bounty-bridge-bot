@@ -24,7 +24,7 @@ class TextMessageDB(Base):
         unique=True,
     )
     text = Column(
-        VARCHAR(length=1024),
+        VARCHAR(length=2048),
         nullable=False,
     )
     preview_url = Column(

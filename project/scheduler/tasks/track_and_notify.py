@@ -3,6 +3,7 @@ from typing import List, Tuple, Any
 
 from aiogram import Bot
 from aiogram.types import InlineKeyboardMarkup as Markup
+from aiogram.types import InlineKeyboardButton as Button
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from ...bot.utils.formatters import format_issue_notify_to_message
@@ -46,11 +47,12 @@ async def track_and_notify() -> None:
     async def notify(issue_list: List[Issue], message_code: str, button_code: str) -> None:
         # Notify users about issues
         message_text = await TextMessage(sessionmaker).get(message_code)
-        primary_button = await TextButton(sessionmaker).get_button(button_code)
+        button_text = await TextButton(sessionmaker).get(button_code)
 
         for issue in issue_list:
             text = format_issue_notify_to_message(message_text, issue)
-            reply_markup = Markup(inline_keyboard=[[primary_button], [create_bounty_button]])
+            button = Button(text=button_text, url=issue.html_url)
+            reply_markup = Markup(inline_keyboard=[[button], [create_bounty_button]])
 
             for chat in chats:
                 await send_message(bot, chat.id, text, reply_markup=reply_markup)

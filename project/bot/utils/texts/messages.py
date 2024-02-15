@@ -36,7 +36,8 @@ class TextMessage:
         message = await TextMessageDB.get(self.sessionmaker, code)
 
         if message.preview_url:
+            tag_index = message.text.find('>')
             hidden_link = hide_link(message.preview_url)
-            return message.text[:3] + hidden_link + message.text[3:]
+            return message.text[:tag_index + 1] + hidden_link + message.text[tag_index + 1:]
 
         return message.text
