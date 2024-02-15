@@ -215,3 +215,15 @@ class IssueDB(Base):
                 statement = statement.filter(*filters)
             query = await async_session.execute(statement)
             return (query.scalar() + page_size - 1) // page_size
+
+    @classmethod
+    async def get_count(
+            cls: IssueDB,
+            sessionmaker: async_sessionmaker,
+            filters: List[Any],
+    ) -> int:
+        """Get the number of records from the database by a filter."""
+        async with sessionmaker() as session:
+            statement = select(func.count(cls.number)).filter(*filters)
+            result = await session.execute(statement)
+            return result.scalar()

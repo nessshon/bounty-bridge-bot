@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Tuple
 
 from project.db.models import IssueDB
 from project.github.models import Issue
@@ -48,5 +48,11 @@ def format_issue_notify_to_message(text: str, issue: Union[Issue, IssueDB]) -> s
     return text.format_map(format_data)
 
 
-def format_weekly_notify_to_message() -> str:
-    ...
+def format_weekly_notify_to_message(text: str, stats: Tuple[int, int, int]) -> str:
+    format_data = {
+        "num_active": stats[0],
+        "num_approved_assignee": stats[1],
+        "num_suggested_opinions": stats[2],
+    }
+
+    return text.format_map(format_data)
