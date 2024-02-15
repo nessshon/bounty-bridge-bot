@@ -13,6 +13,7 @@ async def bot_commands_setup(bot: Bot) -> None:
     """
     commands = [
         BotCommand(command="start", description="Restart bot"),
+        BotCommand(command="weekly_digest", description="Weekly digest"),
     ]
 
     # Set commands
