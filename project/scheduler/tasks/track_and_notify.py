@@ -55,6 +55,8 @@ async def track_and_notify() -> None:
             reply_markup = Markup(inline_keyboard=[[button], [create_bounty_button]])
 
             for chat in chats:
+                if not chat.broadcast:
+                    continue
                 await send_message(bot, chat.id, text, reply_markup=reply_markup)
 
     # Notify about different types of issues

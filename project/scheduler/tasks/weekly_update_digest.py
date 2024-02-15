@@ -103,6 +103,8 @@ async def weekly_update_digest() -> None:
 
     # Send messages to all chats
     for chat in chats:
+        if not chat.broadcast:
+            continue
         await send_message(bot, chat.id, text, reply_markup=reply_markup)
 
     return None

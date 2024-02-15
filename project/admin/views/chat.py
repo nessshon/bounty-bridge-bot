@@ -20,10 +20,17 @@ class ChatView(CustomModelView):
         IntegerField(
             ChatDB.id.name, "ID",
             required=True,
+            help_text="Unique identifier for this chat.",
+        ),
+        BooleanField(
+            ChatDB.broadcast.name, "Broadcast",
+            required=True,
+            help_text="Enable if you want to send messages to this chat."
         ),
         StringField(
             ChatDB.type.name, "Type",
             read_only=True,
+            help_text="Chat type (private, group, channel, etc.)",
         ),
         StringField(
             ChatDB.title.name, "Title",
