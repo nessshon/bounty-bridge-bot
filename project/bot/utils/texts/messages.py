@@ -6,16 +6,17 @@ from ._init_value import InitValue
 
 
 class MessageCode(InitValue):
-    ISSUE_CREATED: str
-    ISSUE_CLOSING: str
-    ISSUE_APPROVED: str
-    ISSUE_COMPLETED: str
+    UNKNOWN_ERROR: str
 
     MAIN_MENU: str
     ISSUES_LIST: str
     ISSUE_INFO: str
 
-    UNKNOWN_ERROR: str
+    WEEKLY_DIGEST: str
+    ISSUE_CREATED: str
+    ISSUE_CLOSING: str
+    ISSUE_APPROVED: str
+    ISSUE_COMPLETED: str
 
 
 class TextMessage:

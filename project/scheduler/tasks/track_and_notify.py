@@ -2,10 +2,11 @@ import asyncio
 from typing import List, Tuple, Any
 
 from aiogram import Bot
-from aiogram.exceptions import TelegramBadRequest, TelegramRetryAfter
 from aiogram.types import InlineKeyboardMarkup as Markup
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from ...bot.utils.formatters import format_issue_notify_to_message
+from ...bot.utils.messages import send_message
 from ...bot.utils.texts.buttons import TextButton, ButtonCode
 from ...bot.utils.texts.messages import TextMessage, MessageCode
 from ...config import BOUNTIES_CREATOR_BOT_URL
@@ -42,40 +43,32 @@ async def track_and_notify() -> None:
         ButtonCode.CREATE_BOUNTY, url=BOUNTIES_CREATOR_BOT_URL
     )
 
-    async def send_message(chat_id: int, text: str, reply_markup: Markup) -> None:
-        try:
-            await bot.send_message(chat_id, text=text, reply_markup=reply_markup)
-            await asyncio.sleep(0.05)
-        except TelegramRetryAfter as e:
-            # If rate limited, wait and try again
-            await asyncio.sleep(e.retry_after)
-            await send_message(chat_id, text, reply_markup)
-        except TelegramBadRequest:
-            # If chat is not found, or bot is blocked, or any other error, skip.
-            pass
-
-    async def notify_issue(issue_list: List[Issue], message_code: str, button_code: str) -> None:
+    async def notify(issue_list: List[Issue], message_code: str, button_code: str) -> None:
         # Notify users about issues
         message_text = await TextMessage(sessionmaker).get(message_code)
-        button_text = await TextButton(sessionmaker).get_button(button_code)
+        primary_button = await TextButton(sessionmaker).get_button(button_code)
+
         for issue in issue_list:
-            text = message_text.format_map(issue.model_dump())
-            reply_markup = Markup(inline_keyboard=[[button_text], [create_bounty_button]])
+            text = format_issue_notify_to_message(message_text, issue)
+            reply_markup = Markup(inline_keyboard=[[primary_button], [create_bounty_button]])
+
             for chat in chats:
-                await send_message(chat.id, text, reply_markup)
+                await send_message(bot, chat.id, text, reply_markup=reply_markup)
 
     # Notify about different types of issues
     if created_issues:
-        await notify_issue(created_issues, MessageCode.ISSUE_CREATED, ButtonCode.ISSUE_CREATED)
+        await notify(created_issues, MessageCode.ISSUE_CREATED, ButtonCode.ISSUE_CREATED)
 
     if closing_issues:
-        await notify_issue(closing_issues, MessageCode.ISSUE_CLOSING, ButtonCode.ISSUE_CLOSING)
+        await notify(closing_issues, MessageCode.ISSUE_CLOSING, ButtonCode.ISSUE_CLOSING)
 
     if approved_issues:
-        await notify_issue(approved_issues, MessageCode.ISSUE_APPROVED, ButtonCode.ISSUE_APPROVED)
+        await notify(approved_issues, MessageCode.ISSUE_APPROVED, ButtonCode.ISSUE_APPROVED)
 
     if completed_issues:
-        await notify_issue(completed_issues, MessageCode.ISSUE_COMPLETED, ButtonCode.ISSUE_COMPLETED)
+        await notify(completed_issues, MessageCode.ISSUE_COMPLETED, ButtonCode.ISSUE_COMPLETED)
+
+    return None
 
 
 async def _categorize(
@@ -99,6 +92,7 @@ async def _categorize(
     ):
         if issue in created_issues:
             continue
+
         if (
                 "Approved" in issue.labels
                 and "Approved" not in issue_db.labels

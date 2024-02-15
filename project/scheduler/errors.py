@@ -7,8 +7,8 @@ from aiogram.types import BufferedInputFile
 from aiogram.utils.markdown import hbold, hcode
 from apscheduler.events import JobExecutionEvent
 
-from project.bot.utils.messages import send_message
-from project.config import Config
+from ..bot.utils.messages import send_message
+from ..config import Config
 
 
 async def _on_job_error(loop: AbstractEventLoop, event: JobExecutionEvent) -> None:
@@ -22,7 +22,7 @@ async def _on_job_error(loop: AbstractEventLoop, event: JobExecutionEvent) -> No
     bot: Bot = loop.__getattribute__("bot")
     config: Config = loop.__getattribute__("config")
 
-    # Prepare data for document
+    # Get error details
     exc_text, exc_name = str(event.exception), type(event.exception).__name__
     document_data = str(event.traceback).encode()
     document_name = f"error_{event.job_id}.txt"

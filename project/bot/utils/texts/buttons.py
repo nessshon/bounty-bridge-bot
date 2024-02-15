@@ -11,17 +11,17 @@ from ._init_value import InitValue
 
 
 class ButtonCode(InitValue):
+    BACK: str
+    MAIN: str
+
+    ISSUES_LIST: str
+    ISSUE_INFO: str
+
     CREATE_BOUNTY: str
     ISSUE_CREATED: str
     ISSUE_CLOSING: str
     ISSUE_APPROVED: str
     ISSUE_COMPLETED: str
-
-    ISSUES_LIST: str
-    ISSUE_INFO: str
-
-    BACK: str
-    MAIN: str
 
 
 class TextButton:
