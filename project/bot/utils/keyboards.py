@@ -15,11 +15,17 @@ async def main(text_button: TextButton) -> Markup:
     )
 
 
-async def main_menu(text_button: TextButton) -> Markup:
+async def main_menu(text_button: TextButton, broadcast: bool) -> Markup:
+    if broadcast:
+        broadcast_button = await text_button.get_button(ButtonCode.UNSUBSCRIBE_NOTIFICATION)
+    else:
+        broadcast_button = await text_button.get_button(ButtonCode.SUBSCRIBE_NOTIFICATION)
+
     return Markup(
         inline_keyboard=[
             [await text_button.get_button(ButtonCode.ISSUES_LIST)],
             [await text_button.get_button(ButtonCode.CREATE_BOUNTY, url=BOUNTIES_CREATOR_BOT_URL)],
+            [broadcast_button],
         ]
     )
 

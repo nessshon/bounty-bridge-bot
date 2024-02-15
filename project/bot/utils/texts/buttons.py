@@ -23,6 +23,9 @@ class ButtonCode(InitValue):
     ISSUE_APPROVED: str
     ISSUE_COMPLETED: str
 
+    SUBSCRIBE_NOTIFICATION: str
+    UNSUBSCRIBE_NOTIFICATION: str
+
 
 class TextButton:
     """

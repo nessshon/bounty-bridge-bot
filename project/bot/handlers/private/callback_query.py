@@ -1,10 +1,12 @@
 from aiogram import Router, F
+from aiogram.enums import ChatType
 from aiogram.types import CallbackQuery
 
 from project.bot.handlers.private.windows import Window
 from project.bot.manager import Manager
 from project.bot.utils.states import State
 from project.bot.utils.texts.buttons import ButtonCode
+from project.db.models import ChatDB
 
 router = Router()
 router.callback_query.filter(F.message.chat.type == "private")
@@ -20,6 +22,18 @@ async def main_callback_query(call: CallbackQuery, manager: Manager) -> None:
 async def main_menu_callback_query(call: CallbackQuery, manager: Manager) -> None:
     if call.data == ButtonCode.ISSUES_LIST:
         await Window.issues_list(manager)
+
+    elif call.data in [ButtonCode.SUBSCRIBE_NOTIFICATION, ButtonCode.UNSUBSCRIBE_NOTIFICATION]:
+        broadcast = True if call.data == ButtonCode.SUBSCRIBE_NOTIFICATION else False
+        await ChatDB.create_or_update(
+            manager.sessionmaker,
+            id=manager.user_db.id,
+            broadcast=broadcast,
+            type=ChatType.PRIVATE,
+            title=manager.user_db.full_name,
+            username=manager.user_db.username,
+        )
+        await Window.main_menu(manager)
 
     await call.answer()
 
