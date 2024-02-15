@@ -9,8 +9,17 @@ def format_issue_notify_to_message(text: str, issue: Union[Issue, IssueDB]) -> s
         return f"<a href='https://github.com/{login}'>{login}</a>"
 
     format_data = {
+        "number": f"<b>#{issue.number}</b>"
+        if issue.number else "",
+
+        "url": f"<a href='{issue.url}'>Link</a>"
+        if issue.url else "",
+
         "title": f"<b>{issue.title}</b>"
         if issue.title else "",
+
+        "creator": f"<b>Creator:</b> {github_url(issue.creator)}"
+        if issue.creator else "",
 
         "summary": f"<b>Summary:</b>\n<blockquote>{issue.summary}</blockquote>"
         if issue.summary and len(issue.summary) <= 2048
