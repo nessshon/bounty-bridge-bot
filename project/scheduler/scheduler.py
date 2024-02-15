@@ -2,8 +2,10 @@ from typing import Union
 from apscheduler.job import Job
 from apscheduler.jobstores.redis import RedisJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.events import EVENT_JOB_ERROR
 
 from . import tasks
+from .errors import on_job_error
 from ..config import Config
 
 
@@ -86,6 +88,8 @@ class Scheduler:
         Start the scheduler and add the track_and_notify_issue job.
         """
         self.scheduler.start()
+        self.scheduler.add_listener(on_job_error, mask=EVENT_JOB_ERROR)
+        self._add_weekly_update_digest()
         self._add_track_and_notify_issue()
 
     def shutdown(self) -> None:
