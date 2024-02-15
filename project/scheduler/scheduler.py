@@ -62,7 +62,7 @@ class Scheduler:
         return self.scheduler.add_job(
             func=tasks.track_and_notify,
             trigger="interval",
-            minutes=2,
+            minutes=1,
             id=job_id,
         )
 
