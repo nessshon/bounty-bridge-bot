@@ -27,7 +27,7 @@ class TextMessageView(CustomModelView):
             required=False,
             maxlength=2048,
             toolbar=(
-                "undo redo | bold italic underline strikethrough | blockquote | "
+                "undo redo | bold italic underline strikethrough | blockquote | removeformat"
             ),
             statusbar=False,
         ),
