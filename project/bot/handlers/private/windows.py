@@ -4,6 +4,7 @@ from project.bot.utils.formatters import format_issue_notify_to_message, format_
 from project.bot.utils.states import State
 from project.bot.utils.texts.messages import MessageCode
 from project.db.models import IssueDB
+from project.society.storage import SocietyStorage
 
 
 class Window:
@@ -53,7 +54,8 @@ class Window:
 
     @staticmethod
     async def top_contributors(manager: Manager) -> None:
-        stats = await IssueDB.get_top_contributors(manager.sessionmaker, 15)
+        society_storage = SocietyStorage()
+        stats = await society_storage.get_top()
 
         text = await manager.text_message.get(MessageCode.TOP_CONTRIBUTORS)
         text = format_top_contributors(text, stats)
