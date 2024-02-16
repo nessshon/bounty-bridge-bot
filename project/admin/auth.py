@@ -23,6 +23,16 @@ from project.db.models import AdminDB
 from project.admin.views import AdminRoles
 
 
+def pop_none(data: dict) -> dict:
+    """
+    Remove None values from the dictionary.
+
+    :param data: The dictionary to remove None values from.
+    :return: The dictionary with None values removed.
+    """
+    return {k: v for k, v in data.items() if v is not None}
+
+
 def is_data_authentic(data: dict, bot_token: str) -> bool:
     """
     Check if the data received from Telegram OAuth is authentic and not tampered with.
@@ -31,6 +41,7 @@ def is_data_authentic(data: dict, bot_token: str) -> bool:
     :param bot_token: The bot token used to calculate the HMAC hash.
     :return: True if the data is authentic, False otherwise.
     """
+    data = pop_none(data)
     check_hash = data.pop('hash')
     check_list = ['{}={}'.format(k, v) for k, v in data.items()]
     check_string = '\n'.join(sorted(check_list))
@@ -46,6 +57,7 @@ class OAuthData:
     id: Optional[int] = None
     auth_date: Optional[int] = None
     first_name: Optional[str] = None
+    last_name: Optional[str] = None
     hash: Optional[str] = None
     username: Optional[str] = None
     photo_url: Optional[str] = None
