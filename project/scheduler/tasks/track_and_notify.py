@@ -39,7 +39,8 @@ async def track_and_notify() -> None:
     if not any([created_issues, closing_issues, approved_issues, completed_issues]):
         return None
 
-    chats: List[ChatDB] = await ChatDB.get_all(sessionmaker)
+    # Retrieve all chats ids
+    chats_ids: List[int, None] = await ChatDB.get_all_ids(sessionmaker)
     create_bounty_button = await TextButton(sessionmaker).get_button(
         ButtonCode.CREATE_BOUNTY, url=BOUNTIES_CREATOR_BOT_URL
     )
@@ -54,10 +55,8 @@ async def track_and_notify() -> None:
             button = Button(text=button_text, url=issue.url)
             reply_markup = Markup(inline_keyboard=[[button], [create_bounty_button]])
 
-            for chat in chats:
-                if not chat.broadcast:
-                    continue
-                await send_message(bot, chat.id, text, reply_markup=reply_markup)
+            for chat_id in chats_ids:
+                await send_message(bot, chat_id, text, reply_markup=reply_markup)
 
     # Notify about different types of issues
     if created_issues:

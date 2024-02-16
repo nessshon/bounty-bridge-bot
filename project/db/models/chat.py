@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import List, Union
+from typing import List
 
+from aiogram.enums import ChatMemberStatus
 from sqlalchemy import *
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
@@ -47,47 +48,6 @@ class ChatDB(Base):
     __admin_identity__ = "chat"
 
     @classmethod
-    async def update(
-            cls: ChatDB,
-            sessionmaker: async_sessionmaker,
-            **kwargs,
-    ) -> Union[ChatDB, None]:
-        """Update a record in the database."""
-        async with sessionmaker() as session:
-            instance = await session.get(cls, kwargs["id"])
-            if instance:
-                for key, value in kwargs.items():
-                    setattr(instance, key, value)
-                await session.commit()
-                return instance
-            return None
-
-    @classmethod
-    async def create(
-            cls: ChatDB,
-            sessionmaker: async_sessionmaker,
-            **kwargs,
-    ) -> ChatDB:
-        """Create a new record in the database."""
-        async with sessionmaker() as session:
-            instance = ChatDB(**kwargs)
-            session.add(instance)
-            await session.commit()
-            return instance
-
-    @classmethod
-    async def create_or_update(
-            cls: ChatDB,
-            sessionmaker: async_sessionmaker,
-            **kwargs,
-    ) -> ChatDB:
-        """Get and update a record from the database by its primary key."""
-        instance = await cls.get(sessionmaker, kwargs["id"])
-        if instance:
-            return await cls.update(sessionmaker, **kwargs)
-        return await cls.create(sessionmaker, **kwargs)
-
-    @classmethod
     async def get(
             cls: ChatDB,
             sessionmaker: async_sessionmaker,
@@ -100,12 +60,26 @@ class ChatDB(Base):
             return result.scalar()
 
     @classmethod
-    async def get_all(
+    async def get_all_ids(
             cls: ChatDB,
             sessionmaker: async_sessionmaker,
-    ) -> List[ChatDB]:
+    ) -> List[int, None]:
         """Get all records from the database."""
+        from .user import UserDB
+
         async with sessionmaker() as session:
-            query = select(cls).order_by(desc(and_(cls.type != "private")))
+            query = (
+                select(ChatDB.id)
+                .where(ChatDB.broadcast.is_(True))
+                .union_all(
+                    select(UserDB.id)
+                    .where(
+                        and_(
+                            UserDB.broadcast.is_(True),
+                            UserDB.state == ChatMemberStatus.MEMBER,
+                        )
+                    )
+                )
+            )
             result = await session.execute(query)
             return result.scalars().all()  # type: ignore
