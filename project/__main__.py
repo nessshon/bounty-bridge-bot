@@ -25,9 +25,11 @@ from .bot.handlers import bot_routers_include
 from .bot.middlewares import bot_middlewares_register
 from .config import load_config
 from .db.models import Base
+from .db.storage import configure_storage
 from .github.api import GitHubAPI
 from .logger import setup_logger
 from .scheduler import Scheduler
+from .scheduler.tasks import update_society_top
 
 
 @asynccontextmanager
@@ -38,6 +40,7 @@ async def lifespan(_: FastAPI):
     - Creates database tables.
     - Sets up bot commands and webhook.
     - Runs the scheduler.
+    - Update TON Society TOP.
 
     Yields control during application's lifespan and performs cleanup on exit.
 
@@ -51,13 +54,14 @@ async def lifespan(_: FastAPI):
     loop.__setattr__("githubapi", githubapi)
     loop.__setattr__("sessionmaker", sessionmaker)
 
+    scheduler.run()
+    configure_storage()
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
 
+    await update_society_top()
     await bot_commands_setup(bot)
     await bot.set_webhook(url=webhook_url, allowed_updates=dp.resolve_used_update_types())
-
-    scheduler.run()
 
     try:
         yield
