@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Union
 
 from aiogram.enums import ChatMemberStatus
 from sqlalchemy import *
@@ -21,7 +21,7 @@ class ChatDB(Base):
     broadcast = Column(
         BOOLEAN,
         nullable=False,
-        default=True,
+        default=False,
     )
     type = Column(
         VARCHAR(length=32),
@@ -46,6 +46,47 @@ class ChatDB(Base):
     __admin_label__ = "Chats"
     __admin_name__ = "Chat"
     __admin_identity__ = "chat"
+
+    @classmethod
+    async def create(
+            cls: ChatDB,
+            sessionmaker: async_sessionmaker,
+            **kwargs,
+    ) -> ChatDB:
+        """Create a record in the database."""
+        async with sessionmaker() as session:
+            chat = ChatDB(**kwargs)
+            session.add(chat)
+            await session.commit()
+            return chat
+
+    @classmethod
+    async def update(
+            cls: ChatDB,
+            sessionmaker: async_sessionmaker,
+            **kwargs,
+    ) -> Union[ChatDB, None]:
+        """Update a record in the database."""
+        async with sessionmaker() as session:
+            instance = await session.get(cls, kwargs["id"])
+            if instance:
+                for key, value in kwargs.items():
+                    setattr(instance, key, value)
+                await session.commit()
+                return instance
+            return None
+
+    @classmethod
+    async def create_or_update(
+            cls: ChatDB,
+            sessionmaker: async_sessionmaker,
+            **kwargs,
+    ) -> ChatDB:
+        """Get and update a record from the database by its primary key."""
+        instance = await cls.get(sessionmaker, kwargs["id"])
+        if instance:
+            return await cls.update(sessionmaker, **kwargs)
+        return await cls.create(sessionmaker, **kwargs)
 
     @classmethod
     async def get(
