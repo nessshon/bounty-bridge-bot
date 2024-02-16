@@ -1,6 +1,6 @@
 import asyncio
 
-from aiogram import Bot, html, Router, F
+from aiogram import Bot, Router, F
 from aiogram.enums import ChatType
 from aiogram.filters.chat_member_updated import (
     ChatMemberUpdatedFilter,
