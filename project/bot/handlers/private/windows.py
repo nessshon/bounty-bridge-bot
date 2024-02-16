@@ -3,18 +3,15 @@ from project.bot.utils import keyboards
 from project.bot.utils.formatters import format_issue_notify_to_message
 from project.bot.utils.states import State
 from project.bot.utils.texts.messages import MessageCode
-from project.db.models import IssueDB, ChatDB
+from project.db.models import IssueDB
 
 
 class Window:
 
     @staticmethod
     async def main_menu(manager: Manager) -> None:
-        chat = await ChatDB.get(manager.sessionmaker, manager.user.id)
-        broadcast = False if not chat else chat.broadcast
-
         text = await manager.text_message.get(MessageCode.MAIN_MENU)
-        reply_markup = await keyboards.main_menu(manager.text_button, broadcast)
+        reply_markup = await keyboards.main_menu(manager.text_button, manager.user_db.broadcast)
 
         await manager.send_message(text, reply_markup=reply_markup)
         await manager.state.set_state(State.MAIN_MENU)

@@ -23,6 +23,11 @@ class UserDB(Base):
         nullable=False,
         default=ChatMemberStatus.MEMBER,
     )
+    broadcast = Column(
+        BOOLEAN,
+        nullable=False,
+        default=False,
+    )
     full_name = Column(
         VARCHAR(length=128),
         nullable=False,

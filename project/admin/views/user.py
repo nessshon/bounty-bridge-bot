@@ -16,8 +16,9 @@ class UserView(CustomModelView):
     """
     fields = [
         IntegerField(
-            UserDB.id.name, "Telegram ID",
+            UserDB.id.name, "ID",
             read_only=True,
+            help_text="Unique identifier for this chat.",
         ),
         EnumField(
             UserDB.state.name, "State",
@@ -25,6 +26,11 @@ class UserView(CustomModelView):
             read_only=True,
             choices=STATE_CHOICES,
             maxlength=6,
+        ),
+        BooleanField(
+            UserDB.broadcast.name, "Broadcast",
+            required=True,
+            help_text="Enable if you want to send messages to this chat."
         ),
         StringField(
             UserDB.full_name.name, "Name",
@@ -46,4 +52,7 @@ class UserView(CustomModelView):
     searchable_fields = [c.name for c in UserDB.__table__.columns]  # type: ignore
 
     def can_create(self, request: Request) -> bool:
+        return False
+
+    def can_delete(self, request: Request) -> bool:
         return False
