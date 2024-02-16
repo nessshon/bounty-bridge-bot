@@ -101,11 +101,23 @@ class ChatDB(Base):
             return result.scalar()
 
     @classmethod
+    async def get_ids(
+            cls: ChatDB,
+            sessionmaker: async_sessionmaker,
+            chat_type: str,
+    ) -> List[int, None]:
+        """Get all ids from the database filtered by chat type."""
+        async with sessionmaker() as session:
+            query = select(cls.id).where(and_(cls.type == chat_type))
+            result = await session.execute(query)
+            return result.scalars().all()  # type: ignore
+
+    @classmethod
     async def get_all_ids(
             cls: ChatDB,
             sessionmaker: async_sessionmaker,
     ) -> List[int, None]:
-        """Get all records from the database."""
+        """Get all ids from the database."""
         from .user import UserDB
 
         async with sessionmaker() as session:

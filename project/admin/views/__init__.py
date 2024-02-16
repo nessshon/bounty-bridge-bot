@@ -3,6 +3,7 @@ from starlette_admin.contrib.sqla import Admin
 from ._model_view import AdminRoles
 
 from .admin import AdminView
+from .newsletter import NewsletterView
 from .user import UserView
 from .chat import ChatView
 from .issue import IssueView
@@ -50,6 +51,15 @@ def admin_views_add(admin: Admin) -> None:  # noqa
             label=models.IssueDB.__admin_label__,
             name=models.IssueDB.__admin_name__,
             identity=models.IssueDB.__admin_identity__,
+        )
+    )
+    admin.add_view(
+        NewsletterView(
+            models.NewsletterDB,
+            icon=models.NewsletterDB.__admin_icon__,
+            label=models.NewsletterDB.__admin_label__,
+            name=models.NewsletterDB.__admin_name__,
+            identity=models.NewsletterDB.__admin_identity__,
         )
     )
     admin.add_view(
