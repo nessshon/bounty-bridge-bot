@@ -5,6 +5,7 @@ from environs import Env
 
 BASE_DIR = Path(__file__).resolve().parent
 
+HALL_OF_FAME_URL = "https://github.com/ton-society/grants-and-bounties/blob/main/bounties/HALL_OF_FAME.md"
 BOUNTIES_CREATOR_BOT_URL = "https://t.me/bounties_helper_bot"
 
 

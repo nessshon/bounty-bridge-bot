@@ -1,13 +1,14 @@
-from typing import Union, Tuple
+from typing import Union, Tuple, List
 
 from project.db.models import IssueDB
 from project.github.models import Issue
 
 
-def format_issue_notify_to_message(text: str, issue: Union[Issue, IssueDB]) -> str:
-    def github_url(login: str) -> str:
-        return f"<a href='https://github.com/{login}'>{login}</a>"
+def get_github_link(login: str) -> str:
+    return f"<a href='https://github.com/{login}'>{login}</a>"
 
+
+def format_issue_notify_to_message(text: str, issue: Union[Issue, IssueDB]) -> str:
     format_data = {
         "number": f"<b>#{issue.number}</b>"
         if issue.number else "",
@@ -18,7 +19,7 @@ def format_issue_notify_to_message(text: str, issue: Union[Issue, IssueDB]) -> s
         "title": f"<b>{issue.title}</b>"
         if issue.title else "",
 
-        "creator": f"<b>Creator:</b> {github_url(issue.creator)}"
+        "creator": f"<b>Creator:</b> {get_github_link(issue.creator)}"
         if issue.creator else "",
 
         "summary": f"<b>Summary:</b>\n<blockquote>{issue.summary}</blockquote>"
@@ -32,10 +33,10 @@ def format_issue_notify_to_message(text: str, issue: Union[Issue, IssueDB]) -> s
         "labels": " ".join([f"🏷 <code>{label}</code>" for label in issue.labels])
         if issue.labels else "",
 
-        "assignee": f"<b>Assignee:</b> {github_url(issue.assignee)}"
+        "assignee": f"<b>Assignee:</b> {get_github_link(issue.assignee)}"
         if issue.assignee else "",
 
-        "assignees": f"<b>Assignees:</b> {', '.join([github_url(assignee) for assignee in issue.assignees])}"
+        "assignees": f"<b>Assignees:</b> {', '.join([get_github_link(assignee) for assignee in issue.assignees])}"
         if issue.assignees else "",
 
         "state": f"<b>State:</b> {issue.state}"
@@ -64,4 +65,12 @@ def format_weekly_notify_to_message(text: str, stats: Tuple[int, int, int]) -> s
         "num_suggested_opinions": stats[2],
     }
 
+    return text.format_map(format_data)
+
+
+def format_top_contributors(text: str, stats: List[Tuple[str, int]]) -> str:
+    format_data = {
+        "top_contributors": "<br>".join([f"{i}. {get_github_link(login)} - <b>{points}</b>"
+                                         for i, (login, points) in enumerate(stats, start=1)])
+    }
     return text.format_map(format_data)

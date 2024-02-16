@@ -26,6 +26,9 @@ class ButtonCode(InitValue):
     SUBSCRIBE_NOTIFICATION: str
     UNSUBSCRIBE_NOTIFICATION: str
 
+    TOP_CONTRIBUTORS: str
+    HALL_OF_FAME: str
+
 
 class TextButton:
     """

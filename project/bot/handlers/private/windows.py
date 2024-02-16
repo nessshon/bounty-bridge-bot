@@ -1,6 +1,6 @@
 from project.bot.manager import Manager
 from project.bot.utils import keyboards
-from project.bot.utils.formatters import format_issue_notify_to_message
+from project.bot.utils.formatters import format_issue_notify_to_message, format_top_contributors
 from project.bot.utils.states import State
 from project.bot.utils.texts.messages import MessageCode
 from project.db.models import IssueDB
@@ -50,3 +50,14 @@ class Window:
 
         await manager.send_message(text, reply_markup=reply_markup)
         await manager.state.set_state(State.ISSUE_INFO)
+
+    @staticmethod
+    async def top_contributors(manager: Manager) -> None:
+        stats = await IssueDB.get_top_contributors(manager.sessionmaker, 15)
+
+        text = await manager.text_message.get(MessageCode.TOP_CONTRIBUTORS)
+        text = format_top_contributors(text, stats)
+        reply_markup = await keyboards.top_contributors(manager.text_button)
+
+        await manager.send_message(text, reply_markup=reply_markup)
+        await manager.state.set_state(State.TOP_CONTRIBUTORS)

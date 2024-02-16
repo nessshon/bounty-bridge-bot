@@ -18,6 +18,8 @@ class MessageCode(InitValue):
     ISSUE_APPROVED: str
     ISSUE_COMPLETED: str
 
+    TOP_CONTRIBUTORS: str
+
 
 class TextMessage:
     """

@@ -7,3 +7,4 @@ class State(StatesGroup):
     MAIN_MENU = BaseState()
     ISSUES_LIST = BaseState()
     ISSUE_INFO = BaseState()
+    TOP_CONTRIBUTORS = BaseState()

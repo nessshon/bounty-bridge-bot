@@ -22,6 +22,9 @@ async def main_menu_callback_query(call: CallbackQuery, manager: Manager) -> Non
     if call.data == ButtonCode.ISSUES_LIST:
         await Window.issues_list(manager)
 
+    elif call.data == ButtonCode.TOP_CONTRIBUTORS:
+        await Window.top_contributors(manager)
+
     elif call.data in [ButtonCode.SUBSCRIBE_NOTIFICATION, ButtonCode.UNSUBSCRIBE_NOTIFICATION]:
         broadcast = True if call.data == ButtonCode.SUBSCRIBE_NOTIFICATION else False
         manager.user_db.broadcast = broadcast

@@ -227,3 +227,25 @@ class IssueDB(Base):
             statement = select(func.count(cls.number)).filter(*filters)
             result = await session.execute(statement)
             return result.scalar()
+
+    @classmethod
+    async def get_top_contributors(
+            cls: IssueDB,
+            sessionmaker: async_sessionmaker,
+            limit: int,
+    ) -> Sequence[Row[tuple[Any, Any]]]:
+        """Get top contributors from the database."""
+        async with sessionmaker() as session:
+            conditions = (
+                cls.state_reason == 'completed',
+                cls.assignee.isnot(None)
+            )
+            statement = (
+                select(cls.assignee, func.count().label('total_completed'))  # noqa
+                .where(and_(*conditions))
+                .group_by(cls.assignee)
+                .order_by(desc('total_completed'))
+                .limit(limit)
+            )
+            result = await session.execute(statement)
+            return result.all()

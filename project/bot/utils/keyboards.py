@@ -4,7 +4,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder as Builder
 from aiogram.utils.keyboard import InlineKeyboardMarkup as Markup
 
 from project.bot.utils.texts.buttons import TextButton, ButtonCode
-from project.config import BOUNTIES_CREATOR_BOT_URL
+from project.config import BOUNTIES_CREATOR_BOT_URL, HALL_OF_FAME_URL
 
 
 async def main(text_button: TextButton) -> Markup:
@@ -24,6 +24,7 @@ async def main_menu(text_button: TextButton, broadcast: bool) -> Markup:
     return Markup(
         inline_keyboard=[
             [await text_button.get_button(ButtonCode.ISSUES_LIST)],
+            [await text_button.get_button(ButtonCode.TOP_CONTRIBUTORS)],
             [await text_button.get_button(ButtonCode.CREATE_BOUNTY, url=BOUNTIES_CREATOR_BOT_URL)],
             [broadcast_button],
         ]
@@ -45,6 +46,15 @@ async def issue_info(text_button: TextButton, issue_url: str) -> Markup:
         inline_keyboard=[
             [await text_button.get_button(ButtonCode.ISSUE_INFO, url=issue_url)],
             [await text_button.get_button(ButtonCode.BACK)],
+        ]
+    )
+
+
+async def top_contributors(text_button: TextButton) -> Markup:
+    return Markup(
+        inline_keyboard=[
+            [await text_button.get_button(ButtonCode.HALL_OF_FAME, url=HALL_OF_FAME_URL)],
+            [await text_button.get_button(ButtonCode.MAIN)],
         ]
     )
 
