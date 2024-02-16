@@ -27,7 +27,9 @@ class AdminView(CustomModelView):
         ),
         EnumField(
             AdminDB.roles.name, "Roles",
-            choices=ROLE_CHOICES, select2=True, multiple=True
+            choices=ROLE_CHOICES,
+            select2=True,
+            multiple=True,
         ),
         DateTimeField(
             AdminDB.created_at.name, "Created at",

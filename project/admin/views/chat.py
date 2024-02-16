@@ -1,9 +1,8 @@
-from typing import Dict, Any, Union
+from typing import Dict, Any
 
 from aiogram import Bot
 from aiogram.types import Chat
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette_admin import *
 from starlette_admin.exceptions import FormValidationError
@@ -72,7 +71,7 @@ class ChatView(CustomModelView):
             data = await self._arrange_data(request, data)
 
             await self.validate(request, data)
-            session: Union[Session, AsyncSession] = request.state.session
+            session: AsyncSession = request.state.session
             obj = await self._populate_obj(request, self.model(), data)
             obj.type = chat.type
             if chat.type == "private":

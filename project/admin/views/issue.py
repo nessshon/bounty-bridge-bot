@@ -42,10 +42,16 @@ class IssueView(CustomModelView):
         TinyMCEEditorField(
             IssueDB.rewards.name, "Rewards",
             required=False,
+            toolbar=(
+                "undo redo | bold italic underline strikethrough | blockquote | removeformat"
+            ),
         ),
         TinyMCEEditorField(
             IssueDB.summary.name, "Summary",
             required=False,
+            toolbar=(
+                "undo redo | bold italic underline strikethrough | blockquote | removeformat"
+            ),
         ),
         StringField(
             IssueDB.state.name, "State",

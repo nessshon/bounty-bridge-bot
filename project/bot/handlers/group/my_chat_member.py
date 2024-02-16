@@ -28,7 +28,7 @@ async def bot_added_to_group(event: ChatMemberUpdated, manager: Manager) -> None
     await ChatDB.create_or_update(
         manager.sessionmaker,
         id=event.chat.id,
-        type=event.chat.type,
+        type=ChatType.GROUP,
         title=event.chat.title,
         username=event.chat.username,
     )
@@ -42,7 +42,7 @@ async def group_to_supergroup_migration(message: Message, manager: Manager) -> N
     await ChatDB.create_or_update(
         manager.sessionmaker,
         id=message.migrate_to_chat_id,
-        type=message.chat.type,
+        type=ChatType.GROUP,
         title=message.chat.title,
         username=message.chat.username,
     )

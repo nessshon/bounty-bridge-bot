@@ -37,7 +37,7 @@ async def send_message(
         # If rate limited, wait and try again
         await asyncio.sleep(e.retry_after)
         await send_message(bot, chat_id, text, document, reply_markup)
-    except TelegramBadRequest:
+    except (TelegramBadRequest, Exception):
         # If chat is not found, or bot is blocked, or any other error, skip.
         pass
 

@@ -29,7 +29,6 @@ class TextMessageView(CustomModelView):
             toolbar=(
                 "undo redo | bold italic underline strikethrough | blockquote | removeformat"
             ),
-            statusbar=False,
         ),
         ImageFromURLField(
             TextMessageDB.preview_url.name, "Preview URL",
