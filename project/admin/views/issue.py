@@ -17,7 +17,6 @@ class IssueView(CustomModelView):
         ),
         URLField(
             IssueDB.url.name, "URL",
-            read_only=True,
             required=True,
         ),
         StringField(
@@ -40,11 +39,11 @@ class IssueView(CustomModelView):
             IssueDB.labels.name, "Labels",
             required=False,
         ),
-        TextAreaField(
+        TinyMCEEditorField(
             IssueDB.rewards.name, "Rewards",
             required=False,
         ),
-        TextAreaField(
+        TinyMCEEditorField(
             IssueDB.summary.name, "Summary",
             required=False,
         ),
