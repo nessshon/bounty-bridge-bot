@@ -2,6 +2,7 @@ from starlette.requests import Request
 from starlette_admin import *
 
 from ._model_view import CustomModelView
+from .fields.tiny_mceeditor import TINY_TOOLBAR, TINY_EXTRA_OPTIONS
 from ...db.models import IssueDB
 
 
@@ -42,16 +43,14 @@ class IssueView(CustomModelView):
         TinyMCEEditorField(
             IssueDB.rewards.name, "Rewards",
             required=False,
-            toolbar=(
-                "undo redo | bold italic underline strikethrough | blockquote | removeformat"
-            ),
+            toolbar=TINY_TOOLBAR,
+            extra_options=TINY_EXTRA_OPTIONS,
         ),
         TinyMCEEditorField(
             IssueDB.summary.name, "Summary",
             required=False,
-            toolbar=(
-                "undo redo | bold italic underline strikethrough | blockquote | removeformat"
-            ),
+            toolbar=TINY_TOOLBAR,
+            extra_options=TINY_EXTRA_OPTIONS,
         ),
         StringField(
             IssueDB.state.name, "State",
@@ -76,7 +75,7 @@ class IssueView(CustomModelView):
     ]
     page_size = 50
     search_builder = True
-    fields_default_sort = (IssueDB.number, (IssueDB.number.name, True))
+    fields_default_sort = (IssueDB.number, (IssueDB.created_at.name, True))
     searchable_fields = [c.name for c in IssueDB.__table__.columns]  # type: ignore
 
     def can_create(self, request: Request) -> bool:

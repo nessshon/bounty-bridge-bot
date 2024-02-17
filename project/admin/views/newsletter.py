@@ -15,6 +15,7 @@ from starlette_admin.exceptions import ActionFailed, FormValidationError
 from sulguk import SULGUK_PARSE_MODE
 
 from ._model_view import CustomModelView
+from .fields.tiny_mceeditor import TINY_TOOLBAR, TINY_EXTRA_OPTIONS
 from ...db.models import NewsletterDB, ChatDB, UserDB
 
 
@@ -34,9 +35,8 @@ class NewsletterView(CustomModelView):
         TinyMCEEditorField(
             NewsletterDB.content.name, "Content",
             required=False,
-            toolbar=(
-                "undo redo | bold italic underline strikethrough | blockquote | removeformat"
-            ),
+            toolbar=TINY_TOOLBAR,
+            extra_options=TINY_EXTRA_OPTIONS,
             maxlength=4098,
             help_text="Note: If you create a post with an image, the text limit is 1024 characters.",
         ),
@@ -73,8 +73,9 @@ class NewsletterView(CustomModelView):
         ),
     ]
     exclude_fields_from_list = [NewsletterDB.buttons.name]
-    exclude_fields_from_create = [NewsletterDB.created_at.name, "user"]
-    exclude_fields_from_edit = [NewsletterDB.created_at.name, "user"]
+    exclude_fields_from_create = [NewsletterDB.created_at.name]
+    exclude_fields_from_edit = [NewsletterDB.created_at.name]
+    fields_default_sort = (NewsletterDB.id, (NewsletterDB.created_at.name, True))
 
     async def create(self, request: Request, data: Dict[str, Any]) -> Any:
         self.custom_validate(data)

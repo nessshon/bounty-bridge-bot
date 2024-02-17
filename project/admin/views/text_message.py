@@ -3,6 +3,7 @@ from starlette_admin import *
 
 from ._model_view import CustomModelView
 from .fields import ImageFromURLField
+from .fields.tiny_mceeditor import TINY_TOOLBAR, TINY_EXTRA_OPTIONS
 from ...db.models import TextMessageDB
 
 
@@ -26,9 +27,8 @@ class TextMessageView(CustomModelView):
             TextMessageDB.text.name, "Text",
             required=False,
             maxlength=2048,
-            toolbar=(
-                "undo redo | bold italic underline strikethrough | blockquote | removeformat"
-            ),
+            toolbar=TINY_TOOLBAR,
+            extra_options=TINY_EXTRA_OPTIONS,
         ),
         ImageFromURLField(
             TextMessageDB.preview_url.name, "Preview URL",
