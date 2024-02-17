@@ -1,16 +1,19 @@
 from typing import Union, Tuple, List
 
 from aiogram.utils.markdown import hlink
+
+from project.apis.github.models import Issue
+from project.apis.society.models import User
 from project.db.models import IssueDB
-from project.github.models import Issue
-from project.society.models import User
 
 
 def get_github_link(login: str) -> str:
+    """Returns a link to the GitHub user profile."""
     return f"<a href='https://github.com/{login}'>{login}</a>"
 
 
 def format_issue_notify_to_message(text: str, issue: Union[Issue, IssueDB]) -> str:
+    """Formats the issue data to the message."""
     format_data = {
         "number": f"<b>#{issue.number}</b>"
         if issue.number else "",
@@ -70,7 +73,8 @@ def format_weekly_notify_to_message(text: str, stats: Tuple[int, int, int]) -> s
     return text.format_map(format_data)
 
 
-def format_top_contributors(text: str, stats: List[User]) -> str:
+def format_top_contributors_to_message(text: str, stats: List[User]) -> str:
+    """Formats the top contributors data to the message."""
     format_data = {
         "top_contributors": "<br>".join(
             [

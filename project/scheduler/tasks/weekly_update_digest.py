@@ -104,5 +104,3 @@ async def weekly_update_digest() -> None:
     # Send messages to all chats
     for chat_id in chats_ids:
         await send_message(bot, chat_id, text, reply_markup=reply_markup)
-
-    return None

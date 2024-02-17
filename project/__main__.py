@@ -18,6 +18,7 @@ from .admin.admin import Admin
 from .admin.auth import AuthMiddleware, AuthProvider
 from .admin.views import admin_views_add
 from .admin.views.index import IndexView
+from .apis.github import GitHubAPI
 from .app.routes import app_routers_include
 from .app.middlewares import app_middlewares_register
 from .bot.commands import bot_commands_setup, bot_commands_delete
@@ -26,7 +27,6 @@ from .bot.middlewares import bot_middlewares_register
 from .config import load_config
 from .db.models import Base
 from .db.storage import configure_storage
-from .github.api import GitHubAPI
 from .logger import setup_logger
 from .scheduler import Scheduler
 from .scheduler.tasks import update_society_top

@@ -4,7 +4,7 @@ from typing import List, Union, Dict
 import aiofiles
 
 from .models import User
-from ..config import UPLOADS_DIR
+from ...config import UPLOADS_DIR
 
 
 class SocietyStorage:

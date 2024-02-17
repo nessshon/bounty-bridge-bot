@@ -10,6 +10,10 @@ from project.db.models import IssueDB
 
 
 class IndexView(CustomView):
+    """
+    Index view for the admin panel.
+    """
+
     async def render(self, request: Request, templates: Jinja2Templates) -> Response:
         session: AsyncSession = request.state.session
         statement = select(IssueDB).limit(20).order_by(desc(IssueDB.created_at))

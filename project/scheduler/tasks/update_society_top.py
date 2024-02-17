@@ -1,5 +1,5 @@
-from project.society.api import TONSocietyAPI
-from project.society.storage import SocietyStorage
+from ...apis.society import TONSocietyAPI
+from ...apis.society.storage import SocietyStorage
 
 
 async def update_society_top() -> None:

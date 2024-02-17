@@ -1,11 +1,10 @@
-from typing import Dict, List, Literal
-
-import aiohttp
+from typing import List, Literal
 
 from .models import Issue
+from ..client import ClientAPI
 
 
-class GitHubAPI:
+class GitHubAPI(ClientAPI):
     """
     Asynchronous GitHub API client for fetching issue-related data.
     """
@@ -33,19 +32,7 @@ class GitHubAPI:
             f"Authorization": f"Bearer {self.token}",
             "Accept": "application/vnd.github.full+json",
         }
-
-    async def _get(self, method: str) -> Dict:
-        """
-        Sends an HTTP GET request to the GitHub API.
-
-        :param method: GitHub API method.
-        :return: JSON response from the GitHub API.
-        """
-        async with aiohttp.ClientSession(headers=self.headers) as session:
-            async with session.get(self.base_url + method) as response:
-                if response.status != 200:
-                    raise Exception(f"Failed to get {method}: {response.status}")
-                return await response.json()
+        super().__init__(base_url, headers=self.headers)
 
     async def get_issue(self, issue_number: int) -> Issue:
         """

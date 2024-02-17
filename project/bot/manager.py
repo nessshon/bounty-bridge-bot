@@ -1,5 +1,5 @@
 from contextlib import suppress
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from aiogram import Bot
 from aiogram.exceptions import TelegramBadRequest
@@ -79,7 +79,6 @@ class Manager:
     async def send_message(
             self,
             text: str,
-            format_data: list[Dict] = None,
             parse_mode: str | None = SULGUK_PARSE_MODE,
             disable_web_page_preview: bool | None = UNSET_DISABLE_WEB_PAGE_PREVIEW,
             disable_notification: bool | None = None,
@@ -89,7 +88,6 @@ class Manager:
         Send a formatted message using the specified parameters.
 
         :param text: The text of the message.
-        :param format_data: List of dictionaries for text formatting (optional).
         :param parse_mode: The parse mode of the message (optional).
         :param disable_web_page_preview: Disable web page preview for links (optional).
         :param disable_notification: Disable notification for the message (optional).
@@ -98,8 +96,6 @@ class Manager:
         """
         message_id = await self.get_old_message_id()
 
-        if text != self.__emoji:
-            text = self._process_text(text, format_data)
         try:
             message = await self.bot.edit_message_text(
                 text=text,
@@ -166,47 +162,3 @@ class Manager:
                 except TelegramBadRequest as ex:
                     if not any(e in ex.message for e in MESSAGE_EDIT_ERRORS):
                         raise ex
-
-    @staticmethod
-    def __concatenate_format_data(format_data: List[Dict] = None) -> Dict[str, Any]:
-        """
-        Concatenate a list of dictionaries into a single dictionary.
-
-        :param format_data: List of dictionaries to be concatenated.
-        :return: A dictionary containing the merged data from the input dictionaries.
-        """
-        dictionary = {}
-
-        if format_data:
-            for data in format_data:
-                dictionary.update(data)
-
-        return dictionary
-
-    @classmethod
-    def __text_format(cls, text: str, format_dict: Dict = None) -> str:
-        """
-        Format a text string using a dictionary.
-
-        :param text: The text string to be formatted.
-        :param format_dict: Dictionary containing values to replace in the text.
-        :return: Formatted text string.
-        """
-        try:
-            return text.format(**format_dict)
-        except KeyError as e:
-            key = e.args[0]
-            format_dict[key] = "error"
-            return cls.__text_format(text, format_dict)
-
-    @classmethod
-    def _process_text(cls, text: str, format_data: List[Dict] = None) -> str:
-        """
-        Process a text string by concatenating format data and applying text formatting.
-
-        :param text: The text string to be processed.
-        :param format_data: List of dictionaries to be concatenated for formatting.
-        :return: Processed text string.
-        """
-        format_dict = cls.__concatenate_format_data(format_data)
-        return cls.__text_format(text, format_dict)

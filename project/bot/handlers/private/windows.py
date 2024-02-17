@@ -1,10 +1,10 @@
 from project.bot.manager import Manager
 from project.bot.utils import keyboards
-from project.bot.utils.formatters import format_issue_notify_to_message, format_top_contributors
+from project.bot.utils.formatters import format_issue_notify_to_message, format_top_contributors_to_message
 from project.bot.utils.states import State
 from project.bot.utils.texts.messages import MessageCode
 from project.db.models import IssueDB
-from project.society.storage import SocietyStorage
+from project.apis.society.storage import SocietyStorage
 
 
 class Window:
@@ -58,7 +58,7 @@ class Window:
         stats = await society_storage.get_top()
 
         text = await manager.text_message.get(MessageCode.TOP_CONTRIBUTORS)
-        text = format_top_contributors(text, stats)
+        text = format_top_contributors_to_message(text, stats)
         reply_markup = await keyboards.top_contributors(manager.text_button)
 
         await manager.send_message(text, reply_markup=reply_markup)

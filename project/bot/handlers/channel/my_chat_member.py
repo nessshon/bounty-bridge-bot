@@ -22,7 +22,7 @@ router = Router()
 )
 async def bot_added_to_channel(event: ChatMemberUpdated, manager: Manager) -> None:
     """
-    Bot was added to group.
+    Bot was added to channel.
     """
     await asyncio.sleep(1.0)
     await ChatDB.create_or_update(

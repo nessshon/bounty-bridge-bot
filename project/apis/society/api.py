@@ -1,11 +1,10 @@
-from typing import Dict, List
-
-import aiohttp
+from typing import List
 
 from .models import User
+from ..client import ClientAPI
 
 
-class TONSocietyAPI:
+class TONSocietyAPI(ClientAPI):
     """
     Asynchronous TON Society API client for fetching issue-related data.
     """
@@ -25,19 +24,7 @@ class TONSocietyAPI:
                           "AppleWebKit/537.36 (KHTML, like Gecko) "  # noqa
                           "Chrome/120.0.0.0 Safari/537.36"
         }
-
-    async def _get(self, method: str) -> Dict:
-        """
-        Sends an HTTP GET request to the TON Society.
-
-        :param method: TON Society method.
-        :return: JSON response from the TON Society.
-        """
-        async with aiohttp.ClientSession(headers=self.headers) as session:
-            async with session.get(self.base_url + method) as response:
-                if response.status != 200:
-                    raise Exception(f"Failed to get {method}: {response.status}")
-                return await response.json()
+        super().__init__(base_url, headers=self.headers)
 
     async def get_top(self, limit: int = 15) -> List[User]:
         """

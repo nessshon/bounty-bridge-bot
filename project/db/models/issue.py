@@ -7,98 +7,88 @@ from sqlalchemy import Row, RowMapping
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from . import Base
-from ...github.models import Issue
+from ...apis.github.models import Issue
 
 
 class IssueDB(Base):
     """
     Model representing Issue table.
+
+    Attributes:
+        number (int): Issue number.
+        url (str): URL to the GitHub issue.
+        title (str): Title of the issue.
+        creator (str): GitHub user login or None if not assigned.
+        assignee (str): GitHub user login or None if not assigned.
+        assignees (List[str]): List of GitHub user logins or None if not assigned.
+        labels (List[str]): List of GitHub label names or None if not assigned.
+        rewards (str): Rewards of the issue or None if not assigned.
+        summary (str): Summary of the issue or None if not assigned.
+        state (str): State of the issue (e.g. open, closed).
+        state_reason (str): Reason for the state of the issue or None
+         if not assigned (e.g. completed, not not_planned).
+        created_at (datetime): Datetime when the issue was created.
+        updated_at (datetime): Datetime when the issue was last updated or None if not updated.
+        closed_at (datetime): Datetime when the issue was closed or None if not closed.
     """
     number = Column(
         BigInteger,
         primary_key=True,
         nullable=False,
     )
-    """Issue number."""
-
     url = Column(
         VARCHAR(255),
         nullable=False,
     )
-    """URL to the GitHub issue."""
-
     title = Column(
         VARCHAR(512),
         nullable=False,
     )
-    """Title of the issue."""
-
     creator = Column(
         VARCHAR(128),
         nullable=True,
     )
-    """GitHub user login or None if not assigned."""
-
     assignee = Column(
         VARCHAR(64),
         nullable=True,
     )
-    """GitHub user login or None if not assigned."""
-
     assignees = Column(
         JSON,
         nullable=True,
     )
-    """List of GitHub user logins or None if not assigned."""
-
     labels = Column(
         JSON,
         nullable=True,
         default=[],
     )
-    """List of GitHub label names or None if not assigned."""
-
     rewards = Column(
         VARCHAR(512),
         nullable=True,
     )
-    """Rewards of the issue or None if not assigned."""
-
     summary = Column(
         VARCHAR(2048),
         nullable=True,
     )
-    """Summary of the issue or None if not assigned."""
-
     state = Column(
         VARCHAR(32),
         nullable=False,
     )
-    """State of the issue (e.g. open, closed)."""
-
     state_reason = Column(
         VARCHAR(32),
         nullable=True,
     )
-    """Reason for the state of the issue or None if not assigned (e.g. completed, not not_planned)."""
-
     created_at = Column(
         DateTime,
         nullable=False,
     )
-    """Datetime when the issue was created."""
-
     updated_at = Column(
         DateTime,
         nullable=True,
     )
-    """Datetime when the issue was last updated or None if not updated."""
-
     closed_at = Column(
         DateTime,
         nullable=True,
     )
-    """Datetime when the issue was closed or None if not closed."""
 
     __tablename__ = "issues"
     __admin_icon__ = "fa-solid fa-circle-exclamation"

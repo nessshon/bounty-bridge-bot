@@ -6,14 +6,14 @@ from aiogram.types import InlineKeyboardMarkup as Markup
 from aiogram.types import InlineKeyboardButton as Button
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from ...apis.github import GitHubAPI
+from ...apis.github.models import Issue
 from ...bot.utils.formatters import format_issue_notify_to_message
 from ...bot.utils.messages import send_message
 from ...bot.utils.texts.buttons import TextButton, ButtonCode
 from ...bot.utils.texts.messages import TextMessage, MessageCode
 from ...config import BOUNTIES_CREATOR_BOT_URL
 from ...db.models import IssueDB, ChatDB
-from ...github.api import GitHubAPI
-from ...github.models import Issue
 
 
 async def track_and_notify() -> None:
@@ -70,8 +70,6 @@ async def track_and_notify() -> None:
 
     if completed_issues:
         await notify(completed_issues, MessageCode.ISSUE_COMPLETED, ButtonCode.ISSUE_COMPLETED)
-
-    return None
 
 
 async def _categorize(
