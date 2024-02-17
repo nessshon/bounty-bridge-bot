@@ -21,7 +21,7 @@ The bot monitors [repository](https://github.com/ton-society/grants-and-bounties
 informing developer chats about new rewards. It solicits opinions and participation, display relevant tags and include
 an interactive button for easy reward creation.
 
-* Telegram Bot: [BountyBridgeBot](https://t.me/BountyBridgeBot)
+* Telegram Bot: [@BountyBridgeBot](https://t.me/BountyBridgeBot)
 * Admin Panel: [app.bountybot.ness.su](https://app.bountybot.ness.su)
 * phpMyAdmin: [pma.bountybot.ness.su](https://pma.bountybot.ness.su)
 
