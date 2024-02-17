@@ -16,6 +16,7 @@ pydantic>=2.5.0
 redis>=5.0.1
 sulguk~=0.7.0
 sqlalchemy==2.0.27
+sqlalchemy_file==0.6.0
 starlette>=0.36.0
 starlette-admin==0.13.2
 fasteners>=0.19
