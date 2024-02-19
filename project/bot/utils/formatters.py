@@ -78,7 +78,7 @@ def format_top_contributors_to_message(text: str, stats: List[User]) -> str:
     format_data = {
         "top_contributors": "<br>".join(
             [
-                f"{i}. {hlink(user.name, user.society_url)}"
+                f"{i}. {hlink(user.name, user.society_url)} "
                 f"- <b>{user.awards_count}</b>"
                 for i, user in enumerate(stats, start=1)
             ]

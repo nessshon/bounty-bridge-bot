@@ -1,6 +1,9 @@
 from project.bot.manager import Manager
 from project.bot.utils import keyboards
-from project.bot.utils.formatters import format_issue_notify_to_message, format_top_contributors_to_message
+from project.bot.utils.formatters import (
+    format_issue_notify_to_message,
+    format_top_contributors_to_message,
+)
 from project.bot.utils.states import State
 from project.bot.utils.texts.messages import MessageCode
 from project.db.models import IssueDB
