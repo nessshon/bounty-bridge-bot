@@ -83,35 +83,46 @@ async def _categorize(
     :param issues_github: List of issues from the GitHub API.
     :return: Tuple containing lists of created, closing, approved, and completed issues.
     """
-    approved_issues, completed_issues, closing_issues = [], [], []
-    issue_db_numbers = {i.number for i in issue_db}
-    created_issues = [i for i in issues_github if i.number not in issue_db_numbers]
+    # Initialize empty lists for different categories of issues
+    created_issues, approved_issues, completed_issues, closing_issues = [], [], [], []
+    # Create a set of issue numbers from the database for quick lookup
+    issue_db_numbers = {issue.number for issue in issue_db}
 
-    for issue, issue_db in zip(
-            sorted(issues_github, key=lambda x: x.number),
-            sorted(issue_db, key=lambda x: x.number),
-    ):
-        if issue in created_issues:
+    # Identify issues in GitHub that are not present in the database
+    created_issues = [issue for issue in issues_github if issue.number not in issue_db_numbers]
+    # Remove identified created issues from the original GitHub issues list
+    issues_github = [issue for issue in issues_github if issue.number in issue_db_numbers]
+
+    # Sort both GitHub and database issues based on their numbers
+    sorted_issues_github = sorted(issues_github, key=lambda x: x.number)
+    sorted_issue_db = sorted(issue_db, key=lambda x: x.number)
+
+    # Iterate through the sorted issues and categorize them
+    for issue_github, issue_db in zip(sorted_issues_github, sorted_issue_db):
+        # Skip issues already identified as created or with mismatched numbers
+        if issue_github in created_issues or issue_github.number != issue_db.number:
             continue
 
-        if (
-                "Approved" in issue.labels
-                and "Approved" not in issue_db.labels
-                and issue.assignee is None
-                and issue_db.assignee is None
-        ):
-            approved_issues.append(issue)
+        # Categorize based on conditions
         elif (
-                issue.state == "closed"
-                and issue_db.state != "closed"
-                and issue.state_reason == "completed"
-                and issue_db.state_reason != "completed"
-        ):
-            completed_issues.append(issue)
-        elif (
-                "Closing Soon as Not planning" in issue.labels
+                "Closing Soon as Not planning" in issue_github.labels
                 and "Closing Soon as Not planning" not in issue_db.labels
         ):
-            closing_issues.append(issue)
+            closing_issues.append(issue_github)
+        elif (
+                "Approved" in issue_github.labels
+                and "Approved" not in issue_db.labels
+                and issue_github.assignee is None
+                and issue_db.assignee is None
+        ):
+            approved_issues.append(issue_github)
+        elif (
+                issue_github.state == "closed"
+                and issue_db.state != "closed"
+                and issue_github.state_reason == "completed"
+                and issue_db.state_reason != "completed"
+        ):
+            completed_issues.append(issue_github)
 
+    # Return the categorized issues
     return created_issues, closing_issues, approved_issues, completed_issues
