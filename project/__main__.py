@@ -27,6 +27,7 @@ from .bot.middlewares import bot_middlewares_register
 from .config import load_config
 from .db.models import Base
 from .db.storage import configure_storage
+from .db.writer import write_db_texts
 from .logger import setup_logger
 from .scheduler import Scheduler
 from .scheduler.tasks import update_society_top
@@ -56,8 +57,10 @@ async def lifespan(_: FastAPI):
 
     scheduler.run()
     configure_storage()
+
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
+    await write_db_texts(engine)
 
     await update_society_top()
     await bot_commands_setup(bot)
