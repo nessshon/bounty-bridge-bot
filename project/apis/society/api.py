@@ -26,12 +26,50 @@ class TONSocietyAPI(ClientAPI):
         }
         super().__init__(base_url, headers=self.headers)
 
-    async def get_top(self, limit: int = 15) -> List[User]:
+    async def get_user(self, username: str) -> User:
+        """
+        Retrieves a user by username from the TONSocietyAPI.
+
+        :param username: Username of the user.
+        """
+        method = f"/v1/users/{username}"
+        result = await self._get(method)
+        return User(**result.get("user"))
+
+    async def get_users(self, start: int = 0, end: int = 100) -> List[User]:
         """
         Retrieves the top contributors from the TONSocietyAPI.
 
-        :param limit: The maximum number of contributors to retrieve. Default is 15.
+        :param start: Start index for the users list.
+        :param end: End index for the users list.
         """
-        method = f"/v1/users?_start=0&_end={limit}"
-        result = await self._get(method)
+        method = f"/v1/users"
+        params = {"_start": start, "_end": end}
+        result = await self._get(method, params=params)
         return [User(**user) for user in result.get("users")]
+
+    async def get_users_by_collection(
+            self,
+            collection_id: int,
+            start: int = 0,
+            end: int = 100
+    ) -> List[User]:
+        method = f"/v1/users-by-collections/{collection_id}"
+        params = {"_start": start, "_end": end}
+        result = await self._get(method, params=params)
+        return [User(**user) for user in result.get("users")]
+
+    async def get_all_users_by_collection(
+            self,
+            collection_id: int,
+    ) -> List[User]:
+        start, end = 0, 100
+        users = []
+        while True:
+            result = await self.get_users_by_collection(collection_id, start, end)
+            if not result:
+                break
+            users.extend(result)
+            start += 100
+            end += 100
+        return users

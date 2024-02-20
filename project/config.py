@@ -8,6 +8,7 @@ UPLOADS_DIR = BASE_DIR.parent / "data/"
 
 HALL_OF_FAME_URL = "https://github.com/ton-society/grants-and-bounties/blob/main/bounties/HALL_OF_FAME.md"
 BOUNTIES_CREATOR_BOT_URL = "https://t.me/bounties_helper_bot"
+BOUNTIES_COLLECTION_ADDRESS = "EQBAJCGblueX9Nwr84TmrcLmIoPbeunnujBoziT3MtJuaJ0J"  # noqa
 
 
 @dataclass
@@ -90,6 +91,8 @@ class Config:
     database: DatabaseConfig
     github: GitHubConfig
 
+    TONAPI_KEY: str
+
 
 def load_config() -> Config:
     env = Env()
@@ -135,4 +138,5 @@ def load_config() -> Config:
             OWNER=env.str("GITHUB_OWNER"),
             REPO=env.str("GITHUB_REPO"),
         ),
+        TONAPI_KEY=env.str("TONAPI_KEY"),
     )

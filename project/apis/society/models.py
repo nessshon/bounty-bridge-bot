@@ -11,6 +11,7 @@ class User(BaseModel):
         id (int): User ID.
         name (str): Name.
         username (str): User username.
+        raw_address (str): Raw address.
         friendly_address (str): User-friendly address.
         telegram_url (Optional[str]): Telegram URL.
         github_url (Optional[str]): GitHub URL.
@@ -20,6 +21,7 @@ class User(BaseModel):
     id: int
     name: str
     username: str
+    raw_address: str
     friendly_address: str
     telegram_url: Union[str, None]
     github_url: Union[str, None]

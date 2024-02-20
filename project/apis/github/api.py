@@ -58,8 +58,8 @@ class GitHubAPI(ClientAPI):
         :return: List of Issue objects representing the GitHub issues.
         """
         method = f"/repos/{self.owner}/{self.repo}/issues"
-        params = f"?state={state}&page={page}&sort=created&direction=desc"
-        results = await self._get(method + params)
+        params = {"state": state, "page": page, "sort": "created", "direction": "desc"}
+        results = await self._get(method, params=params)
         return [Issue(**result) for result in results if not result.get('pull_request')]
 
     async def get_issues_all(self, state: Literal['open', 'closed', 'all']) -> List[Issue]:
