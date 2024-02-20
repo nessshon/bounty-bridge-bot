@@ -143,6 +143,7 @@ Here is a reference guide for the environment variables used in the project:
 | GITHUB_TOKEN        | str  | GitHub token (you can obtain this from your GitHub account)         | ghp_BWC...ZzD             | ghp_BWC...ZzD       |
 | GITHUB_OWNER        | str  | GitHub owner (organization or user) where the repository is located | ton-society               | ton-society         |
 | GITHUB_REPO         | str  | GitHub repository name                                              | grants-and-bounties       | grants-and-bounties |
+| TONAPI_KEY          | str  | API key from [tonconsole](https://tonconsole.com)                   | AE33EX..ASD32             | AE33EX..ASD32       |
 | APP_URL             | str  | The domain of the webhook                                           | https://...ngrok.free.app | https://example.com |
 | APP_HOST            | str  | The host address where the app is running                           | localhost                 | 0.0.0.0             |
 | APP_PORT            | int  | The port number on which the app is listening                       | 8000                      | 8000                |
