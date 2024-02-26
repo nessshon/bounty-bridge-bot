@@ -14,6 +14,7 @@ async def bot_commands_setup(bot: Bot) -> None:
     commands = [
         BotCommand(command="start", description="Restart bot"),
         BotCommand(command="top", description="Top contributors"),
+        BotCommand(command="weekly_digest", description="Weekly update digest"),
     ]
 
     # Set commands
