@@ -1,13 +1,19 @@
+from aiogram.types import InlineKeyboardMarkup as Markup
+
 from project.bot.manager import Manager
 from project.bot.utils import keyboards
 from project.bot.utils.formatters import (
     format_issue_notify_to_message,
+    format_weekly_notify_to_message,
     format_top_contributors_to_message,
 )
 from project.bot.utils.states import State
+from project.bot.utils.texts.buttons import ButtonCode
 from project.bot.utils.texts.messages import MessageCode
+from project.config import BOUNTIES_CREATOR_BOT_URL
 from project.db.models import IssueDB
 from project.apis.society.storage import SocietyStorage
+from project.scheduler.tasks.weekly_update_digest import get_update_weekly_stats
 
 
 class Window:
@@ -66,3 +72,18 @@ class Window:
 
         await manager.send_message(text, reply_markup=reply_markup)
         await manager.state.set_state(State.TOP_CONTRIBUTORS)
+
+    @staticmethod
+    async def weekly_digest(manager: Manager) -> None:
+        stats = await get_update_weekly_stats(manager.sessionmaker)
+
+        primary_button = await manager.text_button.get_button(
+            ButtonCode.CREATE_BOUNTY, url=BOUNTIES_CREATOR_BOT_URL
+        )
+        main_button = await manager.text_button.get_button(ButtonCode.MAIN)
+        message_text = await manager.text_message.get(MessageCode.WEEKLY_DIGEST)
+
+        text = format_weekly_notify_to_message(message_text, stats)
+        reply_markup = Markup(inline_keyboard=[[primary_button], [main_button]])
+
+        await manager.send_message(text, reply_markup=reply_markup)
