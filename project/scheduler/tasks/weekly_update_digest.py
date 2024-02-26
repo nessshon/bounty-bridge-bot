@@ -1,5 +1,4 @@
 import asyncio
-from datetime import datetime, timedelta
 from typing import Tuple, List
 
 from aiogram import Bot
@@ -15,32 +14,23 @@ from ...config import BOUNTIES_CREATOR_BOT_URL
 from ...db.models import IssueDB, ChatDB
 
 
-async def _get_stats(sessionmaker: async_sessionmaker) -> Tuple[int, int, int]:
+async def get_update_weekly_stats(sessionmaker: async_sessionmaker) -> Tuple[int, int, int]:
     """
     Retrieve statistics on active, approved assignee, and suggested opinions.
 
     :param sessionmaker: Asyncio sessionmaker for database interaction.
     :return: Tuple of active, approved assignee, and suggested opinions.
     """
-    current_date = datetime.now().date()
-    start_last_week, end_last_week = _get_last_week_period(current_date)
-
-    # Define date filters for the week
-    _date_filters = and_(
-        IssueDB.created_at >= start_last_week,
-        IssueDB.created_at <= end_last_week,
-    )
     # Filters for active issues
     active_filters = [
-        _date_filters,
         and_(
+            IssueDB.labels.contains("Approved"),
             IssueDB.assignee.is_not(None),
             IssueDB.state == "open",
         )
     ]
     # Filters for approved assignee issues
     approved_filters = [
-        _date_filters,
         and_(
             IssueDB.labels.contains("Approved"),
             IssueDB.assignee.is_(None),
@@ -49,7 +39,6 @@ async def _get_stats(sessionmaker: async_sessionmaker) -> Tuple[int, int, int]:
     ]
     # Filters for suggested opinions
     suggested_filters = [
-        _date_filters,
         and_(
             not_(IssueDB.labels.contains("Approved")),
             IssueDB.state == "open",
@@ -64,20 +53,6 @@ async def _get_stats(sessionmaker: async_sessionmaker) -> Tuple[int, int, int]:
     return num_active, num_approved_assignee, num_suggested_opinions
 
 
-def _get_last_week_period(current_date: datetime.date) -> Tuple[datetime.date, datetime.date]:
-    """
-    Calculate the start and end dates of the previous week based on the current date.
-
-    :param current_date: The current date.
-    :return: Tuple of the start and end dates of the previous week.
-    """
-    start_current_week = current_date - timedelta(days=current_date.weekday())
-    start_last_week = start_current_week - timedelta(days=7)
-    end_last_week = start_last_week + timedelta(days=6)
-
-    return start_last_week, end_last_week
-
-
 async def weekly_update_digest() -> None:
     """
     Send weekly digest updates to all chat subscribers.
@@ -89,7 +64,7 @@ async def weekly_update_digest() -> None:
     # Retrieve all chats ids
     chats_ids: List[int, None] = await ChatDB.get_all_ids(sessionmaker)
     # Get statistics
-    stats = await _get_stats(sessionmaker)
+    stats = await get_update_weekly_stats(sessionmaker)
 
     # Get message text and button
     message_text = await TextMessage(sessionmaker).get(MessageCode.WEEKLY_DIGEST)
