@@ -2,6 +2,7 @@ import asyncio
 from contextlib import asynccontextmanager
 
 import uvicorn
+from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
@@ -115,7 +116,9 @@ sessionmaker = async_sessionmaker(
 # Create bot instance
 bot = Bot(
     token=config.bot.TOKEN,
-    parse_mode=ParseMode.HTML,
+    default=DefaultBotProperties(
+        parse_mode=ParseMode.HTML,
+    )
 )
 
 # Create Redis storage instance
