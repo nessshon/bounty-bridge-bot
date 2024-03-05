@@ -22,8 +22,8 @@ informing developer chats about new rewards. It solicits opinions and participat
 an interactive button for easy reward creation.
 
 * Telegram Bot: [@BountyBridgeBot](https://t.me/BountyBridgeBot)
-* Admin Panel: [app.bountybot.ness.su](https://app.bountybot.ness.su)
-* phpMyAdmin: [pma.bountybot.ness.su](https://pma.bountybot.ness.su)
+* Admin Panel: [bot.bounty-bridge.ness.su](https://bot.bounty-bridge.ness.su)
+* phpMyAdmin: [pma.bounty-bridge.ness.su](https://pma.bounty-bridge.ness.su)
 
 ## Features
 
