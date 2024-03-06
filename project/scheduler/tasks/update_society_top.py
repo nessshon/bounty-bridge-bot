@@ -35,4 +35,4 @@ async def update_society_top() -> None:
     # Sort users based on awards_count in descending order
     society_top = sorted(bounty_users, key=lambda x: x.awards_count, reverse=True)
     # Save the updated society top data to storage
-    await society_storage.save_top(society_top)
+    await society_storage.save_users(society_top)

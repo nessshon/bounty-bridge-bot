@@ -73,14 +73,14 @@ def format_weekly_notify_to_message(text: str, stats: Tuple[int, int, int]) -> s
     return text.format_map(format_data)
 
 
-def format_top_contributors_to_message(text: str, stats: List[User]) -> str:
+def format_top_contributors_to_message(text: str, stats: List[User], start: int = 1) -> str:
     """Formats the top contributors data to the message."""
     format_data = {
         "top_contributors": "<br>".join(
             [
                 f"{i}. {hlink(user.name, user.society_url)} "
                 f"- <b>{user.awards_count}</b>"
-                for i, user in enumerate(stats, start=1)
+                for i, user in enumerate(stats, start=start)
             ]
         )
     }

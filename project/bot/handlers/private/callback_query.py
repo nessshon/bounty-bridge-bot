@@ -20,9 +20,11 @@ async def main_callback_query(call: CallbackQuery, manager: Manager) -> None:
 @router.callback_query(State.MAIN_MENU)
 async def main_menu_callback_query(call: CallbackQuery, manager: Manager) -> None:
     if call.data == ButtonCode.ISSUES_LIST:
+        await manager.state.update_data(page=1)
         await Window.issues_list(manager)
 
     elif call.data == ButtonCode.TOP_CONTRIBUTORS:
+        await manager.state.update_data(page=1)
         await Window.top_contributors(manager)
 
     elif call.data in [ButtonCode.SUBSCRIBE_NOTIFICATION, ButtonCode.UNSUBSCRIBE_NOTIFICATION]:
@@ -62,5 +64,21 @@ async def issues_list_callback_query(call: CallbackQuery, manager: Manager) -> N
 async def issue_info_callback_query(call: CallbackQuery, manager: Manager) -> None:
     if call.data == ButtonCode.BACK:
         await Window.issues_list(manager)
+
+    await call.answer()
+
+
+@router.callback_query(State.TOP_CONTRIBUTORS)
+async def top_contributors_callback_query(call: CallbackQuery, manager: Manager) -> None:
+    if call.data == ButtonCode.BACK:
+        await manager.state.update_data(page=1)
+        await Window.main_menu(manager)
+    elif call.data.startswith("page"):
+        state_data = await manager.state.get_data()
+        current_page = state_data.get("page", 1)
+        page = int(call.data.split(":")[1])
+        if current_page != page:
+            await manager.state.update_data(page=page)
+            await Window.top_contributors(manager)
 
     await call.answer()

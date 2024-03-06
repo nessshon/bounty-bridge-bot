@@ -64,11 +64,18 @@ class Window:
     @staticmethod
     async def top_contributors(manager: Manager) -> None:
         society_storage = SocietyStorage()
-        stats = await society_storage.get_top()
+        stats = await society_storage.get_users()
+
+        state_data = await manager.state.get_data()
+        page, page_size = state_data.get("page", 1), 15
+
+        start = page_size * (page - 1) + 1
+        total_pages = (len(stats) + page_size - 1) // page_size
+        stats = stats[page_size * (page - 1): page_size * page]
 
         text = await manager.text_message.get(MessageCode.TOP_CONTRIBUTORS)
-        text = format_top_contributors_to_message(text, stats)
-        reply_markup = await keyboards.top_contributors(manager.text_button)
+        text = format_top_contributors_to_message(text, stats, start=start)
+        reply_markup = await keyboards.top_contributors(manager.text_button, page, total_pages)
 
         await manager.send_message(text, reply_markup=reply_markup)
         await manager.state.set_state(State.TOP_CONTRIBUTORS)

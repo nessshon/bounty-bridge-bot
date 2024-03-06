@@ -43,7 +43,7 @@ class SocietyStorage:
         async with aiofiles.open(self.filename, "r") as file:
             return json.loads(await file.read())
 
-    async def save_top(self, users: List[User]) -> None:
+    async def save_users(self, users: List[User]) -> None:
         """
         Saves a list of User models to the society's top JSON file.
 
@@ -52,11 +52,11 @@ class SocietyStorage:
         data = [user.model_dump() for user in users]
         await self._save(data)
 
-    async def get_top(self, limit: int = 15) -> List[User]:
+    async def get_users(self) -> List[User]:
         """
         Retrieves a list of User models from the society's top JSON file.
 
         :return: The list of User models.
         """
         data = await self._load()
-        return [User(**user) for user in data][:limit]
+        return [User(**user) for user in data]

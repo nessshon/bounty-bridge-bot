@@ -50,13 +50,24 @@ async def issue_info(text_button: TextButton, issue_url: str) -> Markup:
     )
 
 
-async def top_contributors(text_button: TextButton) -> Markup:
-    return Markup(
+async def top_contributors(text_button: TextButton, page: int, total_pages: int) -> Markup:
+    before_reply_markup = Markup(
         inline_keyboard=[
             [await text_button.get_button(ButtonCode.HALL_OF_FAME, url=HALL_OF_FAME_URL)],
-            [await text_button.get_button(ButtonCode.MAIN)],
         ]
     )
+    after_reply_markup = Markup(
+        inline_keyboard=[
+            [await text_button.get_button(ButtonCode.BACK)],
+        ]
+    )
+    paginator = InlineKeyboardPaginator(
+        current_page=page,
+        total_pages=total_pages,
+        before_reply_markup=before_reply_markup,
+        after_reply_markup=after_reply_markup,
+    )
+    return paginator.as_markup()
 
 
 async def back(text_button: TextButton) -> Markup:
@@ -89,7 +100,7 @@ class InlineKeyboardPaginator:
 
     def __init__(
             self,
-            items: List[Tuple],
+            items: Optional[List[Tuple]] = None,
             current_page: int = 1,
             total_pages: int = 1,
             row_width: int = 1,
@@ -97,7 +108,7 @@ class InlineKeyboardPaginator:
             before_reply_markup: Optional[Markup] = None,
             after_reply_markup: Optional[Markup] = None,
     ) -> None:
-        self.items = items
+        self.items = items or []
         self.current_page = current_page
         self.total_pages = total_pages
         self.row_width = row_width
