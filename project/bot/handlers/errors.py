@@ -38,11 +38,6 @@ async def telegram_api_error(event: ErrorEvent, manager: Manager) -> None:
     """
     logging.exception(f"Update: {event.update}\nException: {event.exception}")
 
-    with suppress(Exception):
-        # Handle unknown error
-        await unknown_error_window(manager)
-        await event.update.message.delete()
-
     # Prepare data for document
     update_json = event.update.model_dump_json(indent=2, exclude_none=True)
     exc_text, exc_name = str(event.exception), type(event.exception).__name__
@@ -53,6 +48,12 @@ async def telegram_api_error(event: ErrorEvent, manager: Manager) -> None:
     document_data = update_data + traceback_data
     document_name = f"error_{event.update.update_id}.txt"
     document = BufferedInputFile(document_data, filename=document_name)
+
+    with suppress(Exception):
+        # Handle unknown error
+        await unknown_error_window(manager)
+        await event.update.message.delete()
+
     text = f"{hbold(exc_name)}:\n{hcode(exc_text[:1024 - len(exc_name) - 2])}"
     await send_message(manager.bot, manager.config.bot.DEV_ID, text, document)
 
