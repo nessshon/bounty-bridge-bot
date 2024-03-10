@@ -31,6 +31,7 @@ async def _on_job_error(loop: AbstractEventLoop, event: JobExecutionEvent) -> No
 
     # Send document with error details
     await send_message(bot, config.bot.DEV_ID, text, document)
+    await send_message(bot, config.bot.ADMIN_ID, text, document)
 
 
 def on_job_error(event: JobExecutionEvent) -> None:
