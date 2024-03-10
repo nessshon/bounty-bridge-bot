@@ -83,6 +83,7 @@ class Manager:
             disable_web_page_preview: bool | None = UNSET_DISABLE_WEB_PAGE_PREVIEW,
             disable_notification: bool | None = None,
             reply_markup: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply | None = None,
+            send_mode: str = "edit",
     ) -> Message:
         """
         Send a formatted message using the specified parameters.
@@ -92,22 +93,12 @@ class Manager:
         :param disable_web_page_preview: Disable web page preview for links (optional).
         :param disable_notification: Disable notification for the message (optional).
         :param reply_markup: InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove, ForceReply, None
+        :param send_mode: Whether to send the message or edit the previous one.
         :return: The send or edited Message object.
         """
         message_id = await self.get_old_message_id()
 
-        try:
-            message = await self.bot.edit_message_text(
-                text=text,
-                chat_id=self.state.key.chat_id,
-                message_id=message_id,
-                parse_mode=parse_mode,
-                disable_web_page_preview=disable_web_page_preview,
-                reply_markup=reply_markup,
-            )
-        except TelegramBadRequest as ex:
-            if not any(e in ex.message for e in MESSAGE_EDIT_ERRORS):
-                raise ex
+        if send_mode == "send":
             message = await self.bot.send_message(
                 text=text,
                 chat_id=self.state.key.chat_id,
@@ -119,7 +110,31 @@ class Manager:
             await self.delete_previous_message()
             await self.state.update_data(message_id=message.message_id)
 
-        return message
+        else:
+            try:
+                message = await self.bot.edit_message_text(
+                    text=text,
+                    chat_id=self.state.key.chat_id,
+                    message_id=message_id,
+                    parse_mode=parse_mode,
+                    disable_web_page_preview=disable_web_page_preview,
+                    reply_markup=reply_markup,
+                )
+            except TelegramBadRequest as ex:
+                if not any(e in ex.message for e in MESSAGE_EDIT_ERRORS):
+                    raise ex
+                message = await self.bot.send_message(
+                    text=text,
+                    chat_id=self.state.key.chat_id,
+                    parse_mode=parse_mode,
+                    disable_web_page_preview=disable_web_page_preview,
+                    disable_notification=disable_notification,
+                    reply_markup=reply_markup,
+                )
+                await self.delete_previous_message()
+                await self.state.update_data(message_id=message.message_id)
+
+            return message
 
     @staticmethod
     async def delete_message(message: Message) -> None:

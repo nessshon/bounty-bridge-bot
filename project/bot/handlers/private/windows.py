@@ -19,11 +19,11 @@ from project.scheduler.tasks.weekly_update_digest import get_update_weekly_stats
 class Window:
 
     @staticmethod
-    async def main_menu(manager: Manager) -> None:
+    async def main_menu(manager: Manager, send_mode: str = "edit") -> None:
         text = await manager.text_message.get(MessageCode.MAIN_MENU)
         reply_markup = await keyboards.main_menu(manager.text_button, manager.user_db.broadcast)
 
-        await manager.send_message(text, reply_markup=reply_markup)
+        await manager.send_message(text, reply_markup=reply_markup, send_mode=send_mode)
         await manager.state.set_state(State.MAIN_MENU)
 
     @classmethod
@@ -62,7 +62,7 @@ class Window:
         await manager.state.set_state(State.ISSUE_INFO)
 
     @staticmethod
-    async def top_contributors(manager: Manager) -> None:
+    async def top_contributors(manager: Manager, send_mode: str = "edit") -> None:
         society_storage = SocietyStorage()
         stats = await society_storage.get_users()
 
@@ -77,11 +77,11 @@ class Window:
         text = format_top_contributors_to_message(text, stats, start=start)
         reply_markup = await keyboards.top_contributors(manager.text_button, page, total_pages)
 
-        await manager.send_message(text, reply_markup=reply_markup)
+        await manager.send_message(text, reply_markup=reply_markup, send_mode=send_mode)
         await manager.state.set_state(State.TOP_CONTRIBUTORS)
 
     @staticmethod
-    async def weekly_digest(manager: Manager) -> None:
+    async def weekly_digest(manager: Manager, send_mode: str = "edit") -> None:
         stats = await get_update_weekly_stats(manager.sessionmaker)
 
         primary_button = await manager.text_button.get_button(
@@ -93,4 +93,4 @@ class Window:
         text = format_weekly_notify_to_message(message_text, stats)
         reply_markup = Markup(inline_keyboard=[[primary_button], [main_button]])
 
-        await manager.send_message(text, reply_markup=reply_markup)
+        await manager.send_message(text, reply_markup=reply_markup, send_mode=send_mode)
