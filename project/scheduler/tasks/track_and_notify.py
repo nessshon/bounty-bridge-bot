@@ -121,6 +121,7 @@ async def _categorize(
                 and issue_db.state != "closed"
                 and issue_github.state_reason == "completed"
                 and issue_db.state_reason != "completed"
+                and "Closing Soon as Not planning" not in issue_github.labels
         ):
             completed_issues.append(issue_github)
 
