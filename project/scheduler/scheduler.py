@@ -108,7 +108,6 @@ class Scheduler:
         """
         Shutdown the scheduler and delete both jobs.
         """
-        self._delete_job(tasks.weekly_update_digest.__name__)
         self._delete_job(tasks.update_society_top.__name__)
         self._delete_job(tasks.track_and_notify.__name__)
         self.scheduler.shutdown()
