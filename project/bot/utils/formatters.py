@@ -24,7 +24,7 @@ def format_issue_notify_to_message(text: str, issue: Union[Issue, IssueDB]) -> s
         "title": f"<b>{issue.title}</b>"
         if issue.title else "",
 
-        "creator": f"<b>Created by</b> {get_github_link(issue.creator)}"
+        "creator": f"Created by {get_github_link(issue.creator)}"
         if issue.creator else "",
 
         "summary": f"<b>Summary:</b>\n<blockquote>{issue.summary}</blockquote>"
