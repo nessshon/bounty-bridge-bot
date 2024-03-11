@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Union
+from typing import Union, List
 
 from sqlalchemy import *
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -66,3 +66,14 @@ class AdminDB(Base):
             statement = select(cls).where(and_(cls.user_id == user_id))
             result = await session.execute(statement)
             return result.scalar()
+
+    @classmethod
+    async def get_all_ids(
+            cls: AdminDB,
+            sessionmaker: async_sessionmaker,
+    ) -> List[int]:
+        """Get all ids from the database."""
+        async with sessionmaker() as session:
+            query = select(cls.user_id)
+            result = await session.execute(query)
+            return result.scalars().all()  # type: ignore
