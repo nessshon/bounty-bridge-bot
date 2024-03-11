@@ -102,7 +102,6 @@ class Scheduler:
         self.scheduler.start()
         self.scheduler.add_listener(on_job_error, mask=EVENT_JOB_ERROR)
         self._add_update_society_top()
-        self._add_weekly_update_digest()
         self._add_track_and_notify_issue()
 
     def shutdown(self) -> None:
