@@ -160,7 +160,7 @@ admin = Admin(
 # Mount static files directory
 app.mount("/static", name="statics", app=StaticFiles(directory=config.admin.STATICS_DIR))
 # Register app middlewares
-app_middlewares_register(app, bot=bot, config=config, sessionmaker=sessionmaker)
+app_middlewares_register(app, bot=bot, config=config, sessionmaker=sessionmaker, scheduler=scheduler)
 # Include app routes
 app_routers_include(app)
 # Register bot webhook
