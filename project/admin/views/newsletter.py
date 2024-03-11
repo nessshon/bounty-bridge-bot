@@ -317,7 +317,7 @@ class NewsletterView(CustomModelView):
 
     @classmethod
     def __validate_broadcast_checkbox(cls, data: Dict[str, Any], scheduler: AsyncIOScheduler) -> None:
-        job_id = data.get("job_id", str(uuid4()))
+        job_id = data.get("job_id") if data.get("job_id") != "" else str(uuid4())
         data["job_id"] = job_id
 
         if data.get("broadcast"):
