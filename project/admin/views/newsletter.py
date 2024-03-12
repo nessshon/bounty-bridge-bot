@@ -287,7 +287,11 @@ class NewsletterView(CustomModelView):
         else:
             values = start_cron.split()
             try:
-                return CronTrigger(minute=values[0], hour=values[1], day=values[2], day_of_week=values[3])
+                return CronTrigger(
+                    minute=values[0], hour=values[1],
+                    day=values[2], month=values[3],
+                    day_of_week=values[4],
+                )
             except Exception as e:
                 raise FormValidationError({"start_cron": str(e)})
 
