@@ -1,6 +1,7 @@
 from typing import Dict, Any
 
 import aiohttp
+from aiohttp import ContentTypeError
 
 
 class ClientAPI:
@@ -26,9 +27,14 @@ class ClientAPI:
             method: str,
             params: dict = None,
     ) -> Any:
-        async with aiohttp.ClientSession(headers=self.headers) as session:
-            async with session.get(
-                    self.base_url + method,
-                    params=params,
-            ) as response:
-                return await response.json()
+        try:
+            async with aiohttp.ClientSession(headers=self.headers) as session:
+                async with session.get(
+                        self.base_url + method,
+                        params=params,
+                ) as response:
+                    return await response.json()
+        except ContentTypeError:
+            ...
+        except Exception:
+            raise
