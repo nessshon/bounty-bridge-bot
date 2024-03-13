@@ -28,11 +28,13 @@ def format_issue_notify_to_message(text: str, issue: Union[Issue, IssueDB]) -> s
         if issue.creator else "",
 
         "summary": f"<b>Summary:</b>\n<blockquote>{issue.summary}</blockquote>"
-        if issue.summary and len(issue.summary) <= 2048
-        else f"<blockquote>{issue.summary[:2048]}...</blockquote>"
+        if issue.summary and len(issue.summary) <= 100
+        else f"<b>Summary:</b>\n<blockquote>{issue.summary[:100]}...</blockquote>"
         if issue.summary else "",
 
         "rewards": f"<b>Rewards:</b>\n{issue.rewards}"
+        if issue.rewards and len(issue.rewards) <= 50
+        else f"<b>Rewards:</b>\n{issue.rewards[:50]}..."
         if issue.rewards else "",
 
         "labels": " ".join([f"🏷 <code>{label}</code>" for label in issue.labels])
