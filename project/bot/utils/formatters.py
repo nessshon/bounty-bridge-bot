@@ -38,16 +38,16 @@ def format_issue_notify_to_message(text: str, issue: Union[Issue, IssueDB]) -> s
         "labels": " ".join([f"🏷 <code>{label}</code>" for label in issue.labels])
         if issue.labels else "",
 
-        "assignee": f"<b>Assignee:</b> {get_github_link(issue.assignee)}"
+        "assignee": get_github_link(issue.assignee)
         if issue.assignee else "no assignee",
 
         "assignees": f", ".join([get_github_link(assignee) for assignee in issue.assignees])
         if issue.assignees else "no assignees",
 
-        "state": f"<b>State:</b> {issue.state}"
+        "state": f"🔸 <code>{issue.state.title()}</code>"
         if issue.state else "",
 
-        "state_reason": f"<b>State reason:</b> {issue.state_reason}"
+        "state_reason": f"🔹 <code>{issue.state_reason.replace('_', ' ').title()}</code>"
         if issue.state_reason else "",
 
         "created_at": f"<b>Created at:</b> {issue.created_at.strftime('%Y-%m-%d %H:%M:%S')}"
