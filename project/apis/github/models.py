@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime
-from typing import List, Union, Any
+from typing import List, Union
 
 from bs4 import BeautifulSoup
 from pydantic import BaseModel, field_validator, Field
@@ -67,43 +68,54 @@ class Issue(BaseModel):
     @field_validator("rewards", mode="before")
     def extract_rewards(cls, value):  # noqa
         """Extracts rewards from the given value (body)."""
+        if not isinstance(value, str):
+            return None
+
         heading_patterns = ["h3", "h2", "h1"]
         rewards_patterns = ["REWARD", "Reward", "Estimate suggested reward"]
-        return cls.extract_content(value, heading_patterns, rewards_patterns, 512)
+
+        soup = BeautifulSoup(value, 'html.parser')
+
+        for tag in heading_patterns:
+            for text in rewards_patterns:
+                block = soup.find(tag, text=text)
+                if block:
+                    current_tag = block.find_next_sibling()
+                    while current_tag and current_tag.name not in heading_patterns:
+                        if current_tag.name in ["p", "ul", "li"]:
+                            text = current_tag.get_text(separator="\n", strip=True)
+                            currency_matches = re.search(r'\b(\d+(?:\.\d+)?)\s*(?:USD|\$|TON)\b', text, re.IGNORECASE)
+                            sbt_nft_matches = re.findall(r'\bSBT\b|\bNFT\b', text, re.IGNORECASE)
+
+                            if currency_matches or sbt_nft_matches:
+                                if 3 <= len(text) <= 80:
+                                    return text
+
+                        current_tag = current_tag.find_next_sibling()
+
+        return None
 
     @field_validator("summary", mode="before")
     def extract_summary(cls, value):  # noqa
         """Extracts summary from the given value (body)."""
-        heading_patterns = ["h3", "h2", "h1"]
-        summary_patterns = ["Summary", "Introduction"]
-        return cls.extract_content(value, heading_patterns, summary_patterns, 2048)
-
-    @staticmethod
-    def extract_content(
-            value: Any,
-            heading_patterns: List[str],
-            content_patterns: List[str],
-            max_length: int,
-    ) -> Union[str, None]:
-        """Extracts content from the given value (body)."""
         if not isinstance(value, str):
             return None
 
-        paragraphs = []
+        heading_patterns = ["h3", "h2", "h1"]
+        summary_patterns = ["Summary", "Introduction"]
+
+        content = None
         soup = BeautifulSoup(value, 'html.parser')
 
-        for tag, text in [(_tag, _text) for _tag in heading_patterns for _text in content_patterns]:
-            block = soup.find(tag, text=text)
+        for pattern in summary_patterns:
+            block = soup.find(lambda tag: tag.name in heading_patterns and pattern in tag.get_text(), string=pattern)
             if block:
                 next_element = block.find_next()
                 if next_element and next_element.name in heading_patterns:
                     continue
-                if max_length == 512:
-                    content_elements = block.find_next(["ul", "li"])
                 else:
                     content_elements = block.find_next("p")
                 if content_elements:
-                    paragraphs.append(str(content_elements))
+                    content = content_elements.get_text(strip=True)
 
-        text = "".join(paragraphs)
-        return None if (text is None) or (len(text) > max_length) else text
+        return content[:2048] if content else None
