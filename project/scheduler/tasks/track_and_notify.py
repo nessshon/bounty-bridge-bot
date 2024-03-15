@@ -26,11 +26,14 @@ async def track_and_notify() -> None:
     sessionmaker: async_sessionmaker = loop.__getattribute__("sessionmaker")
 
     # Fetch issues from the database and GitHub
-    issue_db: List[IssueDB] = await IssueDB.get_all(sessionmaker)
+    issues_db: List[IssueDB] = await IssueDB.get_all(sessionmaker)
     issues_github: List[Issue] = await githubapi.get_issues_all("all")
 
+    if not any(issues_github):
+        return None
+
     # Categorize issues into different lists
-    created_issues, closing_issues, approved_issues, completed_issues = await _categorize(issue_db, issues_github)
+    created_issues, closing_issues, approved_issues, completed_issues = await _categorize(issues_db, issues_github)
 
     # Update the database with the latest GitHub issues
     await IssueDB.update_all(sessionmaker, issues_github)
