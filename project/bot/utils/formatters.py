@@ -22,27 +22,27 @@ def format_issue_notify_to_message(text: str, issue: Union[Issue, IssueDB]) -> s
         if issue.url else "",
 
         "title": f"<b>{issue.title}</b>"
-        if issue.title else "",
+        if issue.title else "empty title",
 
-        "creator": f"Created by {get_github_link(issue.creator)}"
-        if issue.creator else "",
+        "creator": get_github_link(issue.creator)
+        if issue.creator else "no creator",
 
-        "summary": f"<b>Summary:</b>\n<blockquote>{issue.summary}</blockquote>"
+        "summary": f"<b>Summary:</b><blockquote>{issue.summary}</blockquote>"
         if issue.summary and len(issue.summary) <= 100
-        else f"<b>Summary:</b>\n<blockquote>{issue.summary[:100]}...</blockquote>"
+        else f"<b>Summary:</b><blockquote>{issue.summary[:100]}...</blockquote>"
         if issue.summary else "",
 
-        "rewards": f"<b>Rewards:</b>\n{issue.rewards}"
+        "rewards": "<br><br><b>Rewards:</b><br>• " + issue.rewards.replace('\n', '<br>• ')
         if issue.rewards else "",
 
         "labels": " ".join([f"🏷 <code>{label}</code>" for label in issue.labels])
         if issue.labels else "",
 
         "assignee": f"<b>Assignee:</b> {get_github_link(issue.assignee)}"
-        if issue.assignee else "",
+        if issue.assignee else "no assignee",
 
-        "assignees": f"<b>Assignees:</b> {', '.join([get_github_link(assignee) for assignee in issue.assignees])}"
-        if issue.assignees else "",
+        "assignees": f", ".join([get_github_link(assignee) for assignee in issue.assignees])
+        if issue.assignees else "no assignees",
 
         "state": f"<b>State:</b> {issue.state}"
         if issue.state else "",
