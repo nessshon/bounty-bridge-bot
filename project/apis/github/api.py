@@ -1,4 +1,4 @@
-from typing import List, Literal
+from typing import List, Literal, Union
 
 from .models import Issue
 from ..client import ClientAPI
@@ -49,7 +49,7 @@ class GitHubAPI(ClientAPI):
             self,
             page: int,
             state: Literal['open', 'closed', 'all'],
-    ) -> List[Issue]:
+    ) -> Union[List[Issue], None]:
         """
         Retrieves a list of GitHub issues based on pagination and issue state.
 
@@ -60,7 +60,9 @@ class GitHubAPI(ClientAPI):
         method = f"/repos/{self.owner}/{self.repo}/issues"
         params = {"state": state, "page": page, "sort": "created", "direction": "desc"}
         results = await self._get(method, params=params)
-        return [Issue(**result) for result in results if not result.get('pull_request')]
+        if results:
+            return [Issue(**result) for result in results if not result.get('pull_request')]
+        return None
 
     async def get_issues_all(self, state: Literal['open', 'closed', 'all']) -> List[Issue]:
         """

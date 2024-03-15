@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from .models import NftItem
 from ..client import ClientAPI
@@ -20,11 +20,13 @@ class TONAPI(ClientAPI):
             account_id: str,
             limit: int = 100,
             offset: int = 0,
-    ) -> List[NftItem]:
+    ) -> Union[List[NftItem], None]:
         method = f"/v2/nfts/collections/{account_id}/items"
         params = {"limit": limit, "offset": offset}
         result = await self._get(method, params=params)
-        return [NftItem(**item) for item in result.get("nft_items", [])]
+        if result:
+            return [NftItem(**item) for item in result.get("nft_items", [])]
+        return None
 
     async def get_all_items_by_collection(
             self,
