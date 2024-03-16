@@ -34,7 +34,7 @@ class TONSocietyAPI(ClientAPI):
         """
         method = f"/v1/users/{username}"
         result = await self._get(method)
-        return User(**result.get("user"))
+        return User(**result["data"].get("user"))
 
     async def get_users(self, start: int = 0, end: int = 100) -> List[User]:
         """
@@ -46,7 +46,7 @@ class TONSocietyAPI(ClientAPI):
         method = f"/v1/users"
         params = {"_start": start, "_end": end}
         result = await self._get(method, params=params)
-        return [User(**user) for user in result.get("users")]
+        return [User(**user) for user in result["data"].get("users")]
 
     async def get_users_by_collection(
             self,
@@ -57,7 +57,7 @@ class TONSocietyAPI(ClientAPI):
         method = f"/v1/users-by-collections/{collection_id}"
         params = {"_start": start, "_end": end}
         result = await self._get(method, params=params)
-        return [User(**user) for user in result.get("users")]
+        return [User(**user) for user in result["data"].get("users")]
 
     async def get_all_users_by_collection(
             self,
