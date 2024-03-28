@@ -1,4 +1,7 @@
+import asyncio
 from typing import List, Literal, Union
+
+from aiohttp import ClientConnectorError
 
 from .models import Issue
 from ..client import ClientAPI
@@ -58,7 +61,7 @@ class GitHubAPI(ClientAPI):
         :return: List of Issue objects representing the GitHub issues.
         """
         method = f"/repos/{self.owner}/{self.repo}/issues"
-        params = {"state": state, "page": page, "sort": "created", "direction": "desc"}
+        params = {"state": state, "page": page, "sort": "created", "direction": "desc", "per_page": 100}
         results = await self._get(method, params=params)
         if results:
             return [Issue(**result) for result in results if not result.get('pull_request')]
@@ -72,8 +75,18 @@ class GitHubAPI(ClientAPI):
         :return: List of Issue objects representing all GitHub issues.
         """
         page, issues = 1, []
+
+        async def _get_issues(p, s):
+            try:
+                return await self.get_issues(p, s)
+            except ClientConnectorError as e:
+                if "Cannot connect to host api.github.com" in str(e):
+                    await asyncio.sleep(1)
+                    return await _get_issues(p, s)
+                raise e
+
         while True:
-            results = await self.get_issues(page, state)
+            results = await _get_issues(page, state)
             if not results:
                 break
             issues.extend(results)
