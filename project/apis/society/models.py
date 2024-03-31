@@ -11,20 +11,12 @@ class User(BaseModel):
         id (int): User ID.
         name (str): Name.
         username (str): User username.
-        raw_address (str): Raw address.
-        friendly_address (str): User-friendly address.
-        telegram_url (Optional[str]): Telegram URL.
-        github_url (Optional[str]): GitHub URL.
         awards_count (int): Count of awards.
         society_url (Optional[str]): Society URL.
     """
     id: int
     name: str
     username: str
-    raw_address: str
-    friendly_address: str
-    telegram_url: Union[str, None]
-    github_url: Union[str, None]
     awards_count: int
     society_url: Union[str, None] = Field(alias="username")
 
@@ -32,3 +24,23 @@ class User(BaseModel):
     def validate_society_url(cls, value):  # noqa
         """ Validates the society URL. """
         return f"https://society.ton.org/profile/{value}"
+
+
+class SBT(BaseModel):
+    """
+    Model representing a TON Society SBT.
+
+    Attributes:
+        id (int): SBT ID.
+        sbt_collections_id (int): SBT collection ID.
+        content_uri (Optional[str]): SBT Content URI.
+        name (Optional[str]): SBT Name.
+        image (Optional[str]): Image url.
+        sbt_collection_address (str): SBT collection address.
+    """
+    id: int
+    sbt_collections_id: int
+    content_uri: Union[str, None]
+    name: Union[str, None]
+    image: Union[str, None]
+    sbt_collection_address: str

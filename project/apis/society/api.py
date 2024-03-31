@@ -1,6 +1,6 @@
 from typing import List
 
-from .models import User
+from .models import User, SBT
 from ..client import ClientAPI
 
 
@@ -36,7 +36,7 @@ class TONSocietyAPI(ClientAPI):
         result = await self._get(method)
         return User(**result["data"].get("user"))
 
-    async def get_users(self, start: int = 0, end: int = 100) -> List[User]:
+    async def get_users(self, start: int = 0, end: int = 1000) -> List[User]:
         """
         Retrieves the top contributors from the TONSocietyAPI.
 
@@ -52,10 +52,10 @@ class TONSocietyAPI(ClientAPI):
             self,
             collection_id: int,
             start: int = 0,
-            end: int = 100
+            end: int = 1000
     ) -> List[User]:
-        method = f"/v1/users-by-collections/{collection_id}"
-        params = {"_start": start, "_end": end}
+        method = f"/v1/users"
+        params = {"collection_id": collection_id, "_start": start, "_end": end}
         result = await self._get(method, params=params)
         return [User(**user) for user in result["data"].get("users")]
 
@@ -63,13 +63,39 @@ class TONSocietyAPI(ClientAPI):
             self,
             collection_id: int,
     ) -> List[User]:
-        start, end = 0, 100
+        start, end = 0, 1000
         users = []
         while True:
             result = await self.get_users_by_collection(collection_id, start, end)
             if not result:
                 break
             users.extend(result)
-            start += 100
-            end += 100
+            start += 1000
+            end += 1000
         return users
+
+    async def get_sbts_by_user(
+            self,
+            username: str,
+            start: int = 0,
+            end: int = 1000,
+    ) -> List[SBT]:
+        method = f"/v1/users/{username}/sbts"
+        params = {"_start": start, "_end": end}
+        result = await self._get(method, params=params)
+        return [SBT(**sbt) for sbt in result["data"].get("sbts")]
+
+    async def get_all_sbts_by_user(
+            self,
+            username: str,
+    ) -> List[SBT]:
+        start, end = 0, 1000
+        sbts = []
+        while True:
+            result = await self.get_sbts_by_user(username, start, end)
+            if not result:
+                break
+            sbts.extend(result)
+            start += 1000
+            end += 1000
+        return sbts
