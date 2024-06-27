@@ -1,7 +1,7 @@
+from collections import OrderedDict
+
 from ...apis.society import TONSocietyAPI
 from ...apis.society.storage import SocietyStorage
-from ...apis.tonapi import TONAPI
-from ...config import load_config, BOUNTIES_COLLECTION_ADDRESS
 
 
 async def update_society_top() -> None:
@@ -20,6 +20,7 @@ async def update_society_top() -> None:
         bounty_user.awards_count = len([sbt for sbt in sbts if sbt.sbt_collections_id == 44])
 
     # Sort users based on awards_count in descending order
+    bounty_users = list(OrderedDict((d.id, d) for d in bounty_users).values())
     society_top = sorted(bounty_users, key=lambda x: x.awards_count, reverse=True)
     if any(society_top):
         # Save the updated society top data to storage
