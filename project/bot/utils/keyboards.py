@@ -27,6 +27,8 @@ async def main_menu(text_button: TextButton, broadcast: bool) -> Markup:
             [await text_button.get_button(ButtonCode.TOP_CONTRIBUTORS)],
             [await text_button.get_button(ButtonCode.CREATE_BOUNTY, url=BOUNTIES_CREATOR_BOT_URL)],
             [broadcast_button],
+            [await text_button.get_button(ButtonCode.TON_SOCIETY_CHANNEL, url="https://t.me/tonsociety"),
+             await text_button.get_button(ButtonCode.TON_BOUNTY_PASS, url="https://t.me/BountyPassBot")],
         ]
     )
 

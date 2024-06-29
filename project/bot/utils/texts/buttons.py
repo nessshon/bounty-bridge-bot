@@ -29,6 +29,9 @@ class ButtonCode(InitValue):
     TOP_CONTRIBUTORS: str
     HALL_OF_FAME: str
 
+    TON_SOCIETY_CHANNEL: str
+    TON_BOUNTY_PASS: str
+
 
 class TextButton:
     """
