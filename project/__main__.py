@@ -2,9 +2,9 @@ import asyncio
 from contextlib import asynccontextmanager
 
 import uvicorn
+from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.types import Update
 from fastapi import FastAPI
@@ -20,8 +20,8 @@ from .admin.auth import AuthMiddleware, AuthProvider
 from .admin.views import admin_views_add
 from .admin.views.index import IndexView
 from .apis.github import GitHubAPI
-from .app.routes import app_routers_include
 from .app.middlewares import app_middlewares_register
+from .app.routes import app_routers_include
 from .bot.commands import bot_commands_setup, bot_commands_delete
 from .bot.handlers import bot_routers_include
 from .bot.middlewares import bot_middlewares_register
@@ -63,7 +63,7 @@ async def lifespan(_: FastAPI):
         await connection.run_sync(Base.metadata.create_all)
     await write_db_texts(engine)
 
-    await update_society_top()
+    _ = asyncio.create_task(update_society_top())
     await bot_commands_setup(bot)
     await bot.set_webhook(url=webhook_url, allowed_updates=dp.resolve_used_update_types())
 
