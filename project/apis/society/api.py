@@ -1,3 +1,5 @@
+import asyncio
+import random
 from typing import List
 
 from .models import User, SBT
@@ -67,6 +69,7 @@ class TONSocietyAPI(ClientAPI):
         users = []
         while True:
             result = await self.get_users_by_collection(collection_id, start, end)
+            await asyncio.sleep(random.randint(1, 3))
             if not result:
                 break
             users.extend(result)
@@ -93,6 +96,7 @@ class TONSocietyAPI(ClientAPI):
         sbts = []
         while True:
             result = await self.get_sbts_by_user(username, start, end)
+            await asyncio.sleep(random.randint(1, 3))
             if not result:
                 break
             sbts.extend(result)
