@@ -63,9 +63,9 @@ class GitHubAPI(ClientAPI):
         method = f"/repos/{self.owner}/{self.repo}/issues"
         params = {"state": state, "page": page, "sort": "created", "direction": "desc", "per_page": 100}
         results = await self._get(method, params=params)
-        if results:
-            return [Issue(**result) for result in results if not result.get('pull_request')]
-        return None
+        if not results:
+            return None
+        return [Issue(**result) for result in results if not result.get('pull_request')]
 
     async def get_issues_all(self, state: Literal['open', 'closed', 'all']) -> List[Issue]:
         """

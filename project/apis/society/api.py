@@ -48,6 +48,8 @@ class TONSocietyAPI(ClientAPI):
         method = f"/v1/users"
         params = {"_start": start, "_end": end}
         result = await self._get(method, params=params)
+        if not result:
+            return []
         return [User(**user) for user in result["data"].get("users")]
 
     async def get_users_by_collection(
@@ -59,6 +61,8 @@ class TONSocietyAPI(ClientAPI):
         method = f"/v1/users"
         params = {"collection_id": collection_id, "_start": start, "_end": end}
         result = await self._get(method, params=params)
+        if not result:
+            return []
         return [User(**user) for user in result["data"].get("users")]
 
     async def get_all_users_by_collection(
@@ -69,7 +73,7 @@ class TONSocietyAPI(ClientAPI):
         users = []
         while True:
             result = await self.get_users_by_collection(collection_id, start, end)
-            await asyncio.sleep(random.randint(1, 3))
+            await asyncio.sleep(random.randint(5, 10))
             if not result:
                 break
             users.extend(result)
@@ -86,6 +90,8 @@ class TONSocietyAPI(ClientAPI):
         method = f"/v1/users/{username}/sbts"
         params = {"_start": start, "_end": end}
         result = await self._get(method, params=params)
+        if not result:
+            return []
         return [SBT(**sbt) for sbt in result["data"].get("sbts")]
 
     async def get_all_sbts_by_user(
@@ -96,7 +102,7 @@ class TONSocietyAPI(ClientAPI):
         sbts = []
         while True:
             result = await self.get_sbts_by_user(username, start, end)
-            await asyncio.sleep(random.randint(1, 3))
+            await asyncio.sleep(random.randint(5, 10))
             if not result:
                 break
             sbts.extend(result)

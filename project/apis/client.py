@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
 import aiohttp
-from aiohttp import ContentTypeError
+from aiohttp import ContentTypeError, ServerDisconnectedError
 
 
 class ClientAPI:
@@ -34,7 +34,7 @@ class ClientAPI:
                         params=params,
                 ) as response:
                     return await response.json()
-        except ContentTypeError:
+        except (ContentTypeError, ServerDisconnectedError, TimeoutError):
             ...
         except Exception:
             raise
