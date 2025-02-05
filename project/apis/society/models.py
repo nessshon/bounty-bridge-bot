@@ -8,13 +8,13 @@ class User(BaseModel):
     Model representing a TON Society user.
 
     Attributes:
-        id (int): User ID.
+        id (str): User ID.
         name (str): Name.
         username (str): User username.
         awards_count (int): Count of awards.
         society_url (Optional[str]): Society URL.
     """
-    id: int
+    id: str
     name: str
     username: str
     awards_count: int

@@ -61,9 +61,11 @@ class TONSocietyAPI(ClientAPI):
         method = f"/v1/users"
         params = {"collection_id": collection_id, "_start": start, "_end": end}
         result = await self._get(method, params=params)
-        if not result:
+
+        users = result.get("data", {}).get("users") if result else []
+        if not users:
             return []
-        return [User(**user) for user in result["data"].get("users")]
+        return [User(**user) for user in users]
 
     async def get_all_users_by_collection(
             self,
