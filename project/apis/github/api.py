@@ -65,7 +65,7 @@ class GitHubAPI(ClientAPI):
         results = await self._get(method, params=params)
         if not results:
             return None
-        return [Issue(**result) for result in results if not result.get('pull_request')]
+        return [Issue(**result) for result in results if isinstance(result, dict) and not result.get("pull_request")]
 
     async def get_issues_all(self, state: Literal['open', 'closed', 'all']) -> List[Issue]:
         """
